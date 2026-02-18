@@ -169,13 +169,15 @@ VANTA.GLOBE({
 // Replace Feather icons
 feather.replace();
 
-// Load projects from editor (localStorage) if available
-(function(){
-    function loadProjectsFromEditor(){
-        const grid = document.getElementById('projects-grid');
-        if(!grid) return;
+// Load projects from portfolio-data.json
+async function loadProjectsFromData() {
+    const grid = document.getElementById('projects-grid');
+    if(!grid) return;
 
-        const editorProjects = StorageUtil.getJSON('portfolioProjects') || [];
+    try {
+        const response = await fetch('./portfolio-data.json');
+        const data = await response.json();
+        const editorProjects = data.projects || [];
         
         // If editor has projects, use them; otherwise keep placeholder cards
         if(editorProjects.length > 0){
@@ -183,87 +185,95 @@ feather.replace();
             grid.innerHTML = '';
             
             // Add projects from editor
-            editorProjects.forEach((proj, idx) => {
-                const card = createProjectCard(proj, idx);
-                grid.appendChild(card);
-            });
-        }
+        editorProjects.forEach((proj, idx) => {
+            const card = createProjectCard(proj, idx);
+            grid.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Error loading projects:', error);
     }
+}
 
-    function createProjectCard(proj, idx){
-        const article = document.createElement('article');
-        article.className = 'project-card shadow-md p-0';
-        article.setAttribute('data-category', proj.category);
-        article.setAttribute('data-projectid', proj.id);
-        article.setAttribute('aria-labelledby', 'proj-title-' + proj.id);
+function createProjectCard(proj, idx){
+    const article = document.createElement('article');
+    article.className = 'project-card shadow-md p-0';
+    article.setAttribute('data-category', proj.category);
+    article.setAttribute('data-projectid', proj.id);
+    article.setAttribute('aria-labelledby', 'proj-title-' + proj.id);
 
-        // Use hero image from editor if available, otherwise fallback to placeholder
-        const heroImg = proj.heroImage || '/assets/placeholder-' + proj.category + '-' + (idx+1) + '.jpg';
-        
-        // Build tools badges
-        const toolsBadges = (proj.tools || []).map(t => {
-            return '<span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">' + t + '</span>';
-        }).join('');
+    // Use hero image from editor if available, otherwise fallback to placeholder
+    const heroImg = proj.heroImage || '/assets/placeholder-' + proj.category + '-' + (idx+1) + '.jpg';
+    
+    // Build tools badges
+    const toolsBadges = (proj.tools || []).map(t => {
+        return '<span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">' + t + '</span>';
+    }).join('');
 
-        // Build status badge if available
-        const statusBadge = proj.status ? '<span class="inline-block text-xs font-semibold px-2 py-1 rounded ' + 
-            (proj.status === 'completed' ? 'bg-green-100 text-green-800' : 
-             proj.status === 'ongoing' ? 'bg-yellow-100 text-yellow-800' : 
-             'bg-blue-100 text-blue-800') + '">' + proj.status.charAt(0).toUpperCase() + proj.status.slice(1) + '</span>' : '';
+    // Build status badge if available
+    const statusBadge = proj.status ? '<span class="inline-block text-xs font-semibold px-2 py-1 rounded ' + 
+        (proj.status === 'completed' ? 'bg-green-100 text-green-800' : 
+         proj.status === 'ongoing' ? 'bg-yellow-100 text-yellow-800' : 
+         'bg-blue-100 text-blue-800') + '">' + proj.status.charAt(0).toUpperCase() + proj.status.slice(1) + '</span>' : '';
 
-        // Build card HTML
-        const cardHTML = '<div class="skeleton">' +
-            '<img data-src="' + heroImg + '" alt="' + proj.title + ' project image" class="card-img" loading="lazy">' +
-            '</div>' +
-            '<div class="p-6">' +
-            '<div class="flex items-start justify-between mb-2">' +
-            '<h3 id="proj-title-' + proj.id + '" class="text-xl font-bold text-gray-800 flex-1">' + proj.title + '</h3>' +
-            (statusBadge ? '<div class="ml-2">' + statusBadge + '</div>' : '') +
-            '</div>' +
-            '<p class="text-gray-600 mb-4 text-sm line-clamp-2">' + proj.description + '</p>' +
-            (toolsBadges ? '<div class="flex flex-wrap gap-2 mb-4">' + toolsBadges + '</div>' : '') +
-            '<div class="flex items-center justify-between">' +
-            '<small class="text-sm text-gray-500">' + (proj.date || 'N/A') + '</small>' +
-            '<button class="text-blue-600 font-medium view-details" data-id="' + proj.id + '" onclick="openProjectDetailModal(this.closest(\'article\'))">' +
-            'View Details <i data-feather="arrow-right" class="ml-2 w-4 h-4" style="display: inline-block; vertical-align: middle;"></i>' +
-            '</button>' +
-            '</div>' +
-            '</div>';
+    // Build card HTML
+    const cardHTML = '<div class="skeleton">' +
+        '<img data-src="' + heroImg + '" alt="' + proj.title + ' project image" class="card-img" loading="lazy">' +
+        '</div>' +
+        '<div class="p-6">' +
+        '<div class="flex items-start justify-between mb-2">' +
+        '<h3 id="proj-title-' + proj.id + '" class="text-xl font-bold text-gray-800 flex-1">' + proj.title + '</h3>' +
+        (statusBadge ? '<div class="ml-2">' + statusBadge + '</div>' : '') +
+        '</div>' +
+        '<p class="text-gray-600 mb-4 text-sm line-clamp-2">' + proj.description + '</p>' +
+        (toolsBadges ? '<div class="flex flex-wrap gap-2 mb-4">' + toolsBadges + '</div>' : '') +
+        '<div class="flex items-center justify-between">' +
+        '<small class="text-sm text-gray-500">' + (proj.date || 'N/A') + '</small>' +
+        '<button class="text-blue-600 font-medium view-details" data-id="' + proj.id + '" onclick="openProjectDetailModal(this.closest(\'article\'))">' +
+        'View Details <i data-feather="arrow-right" class="ml-2 w-4 h-4" style="display: inline-block; vertical-align: middle;"></i>' +
+        '</button>' +
+        '</div>' +
+        '</div>';
 
-        article.innerHTML = cardHTML;
-        
-        // Store full project data on element for modal use
-        article.dataset.projectData = JSON.stringify(proj);
-        
-        return article;
-    }
+    article.innerHTML = cardHTML;
+    
+    // Store full project data on element for modal use
+    article.dataset.projectData = JSON.stringify(proj);
+    
+    return article;
+}
 
-    // Global function to open project modal from card
-    window.openProjectDetailModal = function(cardEl){
-        const projData = JSON.parse(cardEl.dataset.projectData);
-        openProjectModal(projData);
-    };
+// Global function to open project modal from card
+window.openProjectDetailModal = function(cardEl){
+    const projData = JSON.parse(cardEl.dataset.projectData);
+    openProjectModal(projData);
+};
 
-    document.addEventListener('DOMContentLoaded', loadProjectsFromEditor);
+document.addEventListener('DOMContentLoaded', loadProjectsFromData);
 })();
 
-// Load certifications from editor (localStorage) if available
-(function(){
-    function loadCertificationsFromEditor(){
+// Load certifications from Firebase
+(async function(){
+    async function loadCertificationsFromData(){
         const grid = document.getElementById('cert-grid');
         if(!grid) return;
 
-        const editorCerts = StorageUtil.getJSON('portfolioCertifications') || [];
-        
-        if(editorCerts.length > 0){
-            grid.innerHTML = '';
-            editorCerts.forEach((cert) => {
-                const card = createCertificationCard(cert);
-                grid.appendChild(card);
-            });
-            // Show certifications section if certifications exist
-            const certsSection = document.getElementById('certifications');
-            if(certsSection) certsSection.classList.remove('hidden');
+        try {
+            const response = await fetch('./portfolio-data.json');
+            const data = await response.json();
+            const editorCerts = data.certifications || [];
+            
+            if(editorCerts.length > 0){
+                grid.innerHTML = '';
+                editorCerts.forEach((cert) => {
+                    const card = createCertificationCard(cert);
+                    grid.appendChild(card);
+                });
+                // Show certifications section if certifications exist
+                const certsSection = document.getElementById('certifications');
+                if(certsSection) certsSection.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error loading certifications:', error);
         }
     }
 
@@ -292,35 +302,41 @@ feather.replace();
         return article;
     }
 
-    document.addEventListener('DOMContentLoaded', loadCertificationsFromEditor);
+    document.addEventListener('DOMContentLoaded', loadCertificationsFromData);
 })();
 
 // Load experience from editor (localStorage) if available
-(function(){
-    function loadExperienceFromEditor(){
+(async function(){
+    async function loadExperienceFromData(){
         const expSection = document.querySelector('#experience-timeline');
         if(!expSection) return;
 
-        const editorExp = StorageUtil.getJSON('portfolioExperience') || [];
-        
-        if(editorExp.length > 0){
-            // Sort by start date (most recent first)
-            editorExp.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+        try {
+            const response = await fetch('./portfolio-data.json');
+            const data = await response.json();
+            const editorExp = data.experience || [];
             
-            // Clear placeholder experience items
-            const timeline = expSection.querySelector('.experience-timeline');
-            if(timeline) {
-                const items = timeline.querySelectorAll('.experience-item');
-                items.forEach(item => item.remove());
-            }
-            
-            // Add experience from editor
-            editorExp.forEach((exp) => {
-                const item = createExperienceItem(exp);
-                if(timeline) timeline.appendChild(item);
-            });
+            if(editorExp.length > 0){
+                // Sort by start date (most recent first)
+                editorExp.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+                
+                // Clear placeholder experience items
+                const timeline = expSection.querySelector('.experience-timeline');
+                if(timeline) {
+                    const items = timeline.querySelectorAll('.experience-item');
+                    items.forEach(item => item.remove());
         }
+        
+        // Add experience from editor
+        editorExp.forEach((exp) => {
+            const item = createExperienceItem(exp);
+            if(timeline) timeline.appendChild(item);
+        });
     }
+    } catch (error) {
+        console.error('Error loading experience:', error);
+    }
+}
 
     function createExperienceItem(exp){
         const article = document.createElement('article');
@@ -354,40 +370,43 @@ feather.replace();
     }
 
     if(document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadExperienceFromEditor);
+        document.addEventListener('DOMContentLoaded', loadExperienceFromData);
     } else {
-        loadExperienceFromEditor();
+        loadExperienceFromData();
     }
 })();
 
-// Load skills from editor (localStorage) if available
-(function(){
-    function loadSkillsFromEditor(){
+// Load skills from Firebase
+(async function(){
+    async function loadSkillsFromData(){
         const skillsSection = document.querySelector('#skills');
         if(!skillsSection) return;
 
-        const editorSkills = StorageUtil.getJSON('portfolioSkills') || [];
-        
-        if(editorSkills.length > 0){
-            // Group skills by category
-            const categories = {
-                'mechanical-software': { name: 'Mechanical Engineering Software', skills: [] },
-                'maintenance-ops': { name: 'Maintenance & Operations', skills: [] },
-                'programming': { name: 'Programming & Data Analysis', skills: [] },
-                'other': { name: 'General / Other', skills: [] }
-            };
-
-            editorSkills.forEach(skill => {
-                if(categories[skill.category]) {
-                    categories[skill.category].skills.push(skill);
-                }
-            });
-
-            // Update the skills display areas
-            let colCount = 0;
-            const grids = skillsSection.querySelectorAll('.skills-grid');
+        try {
+            const response = await fetch('./portfolio-data.json');
+            const data = await response.json();
+            const editorSkills = data.skills || [];
             
-            // Update existing skill cards and create new ones as needed
+            if(editorSkills.length > 0){
+                // Group skills by category
+                const categories = {
+                    'mechanical-software': { name: 'Mechanical Engineering Software', skills: [] },
+                    'maintenance-ops': { name: 'Maintenance & Operations', skills: [] },
+                    'programming': { name: 'Programming & Data Analysis', skills: [] },
+                    'other': { name: 'General / Other', skills: [] }
+                };
+
+                editorSkills.forEach(skill => {
+            if(categories[skill.category]) {
+                categories[skill.category].skills.push(skill);
+            }
+        });
+
+        // Update the skills display areas
+        let colCount = 0;
+        const grids = skillsSection.querySelectorAll('.skills-grid');
+        
+        // Update existing skill cards and create new ones as needed
             Object.keys(categories).forEach((catKey, catIndex) => {
                 const catData = categories[catKey];
                 if(catData.skills.length === 0) return;
@@ -436,24 +455,27 @@ feather.replace();
         }
     }
 
-    document.addEventListener('DOMContentLoaded', loadSkillsFromEditor);
+    document.addEventListener('DOMContentLoaded', loadSkillsFromData);
 })();
 
-// Load bio/about data from editor (localStorage) if available
-(function(){
-    function loadBioFromEditor(){
-        const bioData = StorageUtil.getJSON('portfolioBio') || {};
-        
-        // If no bio data exists or only headline is missing, don't update (uses defaults)
-        if(Object.keys(bioData).length === 0) {
-            return;
-        }
+// Load bio/about data from Firebase
+(async function(){
+    async function loadBioFromData(){
+        try {
+            const response = await fetch('./portfolio-data.json');
+            const data = await response.json();
+            const bioData = data.bio || {};
+            
+            // If no bio data exists or only headline is missing, don't update (uses defaults)
+            if(Object.keys(bioData).length === 0) {
+                return;
+            }
 
-        // ===== UPDATE HERO SECTION =====
-        // Update hero section headline/typing text
-        const heroTyping = document.querySelector('.hero-typing');
-        if(heroTyping && bioData.headline) {
-            heroTyping.textContent = bioData.headline;
+            // ===== UPDATE HERO SECTION =====
+            // Update hero section headline/typing text
+            const heroTyping = document.querySelector('.hero-typing');
+            if(heroTyping && bioData.headline) {
+                heroTyping.textContent = bioData.headline;
         }
 
         // ===== UPDATE ABOUT SECTION =====
@@ -555,9 +577,9 @@ feather.replace();
 
     // Load on DOM ready
     if(document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadBioFromEditor);
+        document.addEventListener('DOMContentLoaded', loadBioFromData);
     } else {
-        loadBioFromEditor();
+        loadBioFromData();
     }
 })();
 

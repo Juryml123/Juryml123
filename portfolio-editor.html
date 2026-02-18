@@ -429,6 +429,21 @@
                         </div>
                         <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
                     </div>
+                    
+                    <!-- DATA BACKUP SECTION -->
+                    <div class="mt-8 bg-blue-50 p-6 rounded-lg border border-blue-200">
+                        <h3 class="font-semibold text-blue-900 mb-4">Data Backup & Restore</h3>
+                        <p class="text-blue-700 mb-4">Export your portfolio data to backup or transfer to another device. Import previously exported data.</p>
+                        <div class="flex gap-4 mb-4">
+                            <button class="btn btn-success" onclick="exportData()">Export Data</button>
+                            <label class="btn btn-secondary cursor-pointer">
+                                Import Data
+                                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData()">
+                            </label>
+                        </div>
+                        <small class="text-blue-600">Data includes projects, bio, skills, experience, certifications, and media.</small>
+                    </div>
+                    
                     <div class="mt-8 bg-red-50 p-6 rounded-lg border border-red-200">
                         <h3 class="font-semibold text-red-900 mb-2">Danger Zone</h3>
                         <button class="btn btn-danger" onclick="if(confirm('Are you sure? This will clear all data.')) clearAllData()">Clear All Data</button>
@@ -784,6 +799,76 @@
 
     <script src="editor-data.js"></script>
     <script>
+        // Data management using localStorage
+        const dataManager = {
+            save: (key, data) => {
+                localStorage.setItem(key, JSON.stringify(data));
+            },
+            load: (key) => {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : null;
+            },
+            export: () => {
+                const data = {
+                    bio: dataManager.load('bio') || {},
+                    projects: dataManager.load('projects') || [],
+                    certifications: dataManager.load('certifications') || [],
+                    experience: dataManager.load('experience') || [],
+                    skills: dataManager.load('skills') || []
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'portfolio-data.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            },
+            import: (file) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.bio) dataManager.save('bio', data.bio);
+                        if (data.projects) dataManager.save('projects', data.projects);
+                        if (data.certifications) dataManager.save('certifications', data.certifications);
+                        if (data.experience) dataManager.save('experience', data.experience);
+                        if (data.skills) dataManager.save('skills', data.skills);
+                        alert('Data imported successfully!');
+                        location.reload();
+                    } catch (error) {
+                        alert('Error importing data: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        };
+
+        // Initialize editor - no authentication needed
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('editorContainer').style.display = 'block';
+            loadPortfolioData();
+        });
+
+        let bioData = {};
+        let skillsData = [];
+        let experienceData = [];
+        let certificationsData = [];
+        let mediaData = [];
+
+        // Load portfolio data (no-op, data loaded individually)
+        async function loadPortfolioData() {
+            // Data is loaded individually in each section
+        }
+
+        // Save portfolio data (no-op for localStorage)
+        async function savePortfolioData() {
+            // Data is already saved to localStorage in individual functions
+        }
+
         feather.replace();
         let currentEditIndex = -1;
         let currentSortColumn = null;
@@ -802,12 +887,12 @@
             try {
                 // Send message to iframe with all portfolio data
                 const portfolioData = {
-                    projects: JSON.parse(localStorage.getItem('portfolioProjects') || '[]'),
-                    bio: JSON.parse(localStorage.getItem('portfolioBio') || '{}'),
-                    skills: JSON.parse(localStorage.getItem('portfolioSkills') || '[]'),
-                    experience: JSON.parse(localStorage.getItem('portfolioExperience') || '[]'),
-                    certifications: JSON.parse(localStorage.getItem('portfolioCertifications') || '[]'),
-                    media: JSON.parse(localStorage.getItem('portfolioMedia') || '[]')
+                    projects: dataManager.load('projects') || [],
+                    bio: dataManager.load('bio') || {},
+                    skills: dataManager.load('skills') || [],
+                    experience: dataManager.load('experience') || [],
+                    certifications: dataManager.load('certifications') || [],
+                    media: dataManager.load('media') || []
                 };
                 
                 previewFrame.contentWindow.postMessage({
@@ -862,7 +947,7 @@
         }
 
         function updateDashboardStats() {
-            const projects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
+            const projects = dataManager.load('projects') || [];
             document.getElementById('stat-projects').textContent = projects.length;
             document.getElementById('stat-mining').textContent = projects.filter(p => p.category === 'mining').length;
             document.getElementById('stat-petrochemical').textContent = projects.filter(p => p.category === 'petrochemical').length;
@@ -870,7 +955,7 @@
         }
 
         function renderProjects() {
-            allProjects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
+            allProjects = dataManager.load('projects') || [];
             updateCategoryFilter();
             filterAndDisplayProjects();
         }
@@ -1177,7 +1262,7 @@
             openProjectModal(idx);
         }
 
-        function saveProject() {
+        async function saveProject() {
             const title = document.getElementById('projTitle').value.trim();
             const category = document.getElementById('projCategory').value;
             const description = document.getElementById('projDescription').value.trim();
@@ -1206,20 +1291,19 @@
                 updatedAt: new Date().toISOString()
             };
 
-            let projects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
-            
             if(currentEditIndex >= 0) {
                 // Update existing
-                projects[currentEditIndex] = { ...projects[currentEditIndex], ...projectData };
+                allProjects[currentEditIndex] = { ...allProjects[currentEditIndex], ...projectData };
                 showMessage('Project updated successfully!', 'success');
             } else {
                 // Add new
                 projectData.createdAt = new Date().toISOString();
-                projects.push(projectData);
+                allProjects.push(projectData);
                 showMessage('Project saved successfully!', 'success');
             }
 
-            localStorage.setItem('portfolioProjects', JSON.stringify(projects));
+            localStorage.setItem('portfolioProjects', JSON.stringify(allProjects));
+            dataManager.save('projects', allProjects);
             closeProjectModal();
             renderProjects();
             updateDashboardStats();
@@ -1228,9 +1312,9 @@
 
         function deleteProject(idx) {
             if(!confirm('Are you sure you want to delete this project?')) return;
-            const projects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
+            const projects = dataManager.load('projects') || [];
             projects.splice(idx, 1);
-            localStorage.setItem('portfolioProjects', JSON.stringify(projects));
+            dataManager.save('projects', projects);
             renderProjects();
             updateDashboardStats();
             showMessage('Project deleted', 'success');
@@ -1286,6 +1370,34 @@
                 localStorage.removeItem('portfolioPassword');
                 showMessage('Password removed. Editor is now public.', 'warning');
             }
+        }
+
+        // Data Export/Import Functions
+        function exportData() {
+            dataManager.export();
+            showMessage('Data exported successfully!', 'success');
+        }
+
+        function importData() {
+            const file = document.getElementById('importFile').files[0];
+            if(!file) return;
+
+            if(!confirm('This will replace all current data with the imported data. Continue?')) {
+                // Reset file input
+                document.getElementById('importFile').value = '';
+                return;
+            }
+
+            dataManager.import(file);
+            showMessage('Data imported successfully! Refreshing page...', 'success');
+            
+            // Reload page to reflect changes
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+            
+            // Reset file input
+            document.getElementById('importFile').value = '';
         }
 
         // Certification Management Functions
@@ -1364,7 +1476,7 @@
                 updatedAt: new Date().toISOString()
             };
 
-            let certs = JSON.parse(localStorage.getItem('portfolioCertifications') || '[]');
+            let certs = dataManager.load('certifications') || [];
             
             if(currentCertIndex >= 0) {
                 // Update existing
@@ -1377,14 +1489,14 @@
                 showMessage('Certification saved successfully!', 'success');
             }
 
-            localStorage.setItem('portfolioCertifications', JSON.stringify(certs));
+            dataManager.save('certifications', certs);
             closeCertificationModal();
             renderCertifications();
             syncDataToPreview();
         }
 
         function renderCertifications() {
-            const certs = JSON.parse(localStorage.getItem('portfolioCertifications') || '[]');
+            const certs = dataManager.load('certifications') || [];
             const list = document.getElementById('certificationsList');
             list.innerHTML = '';
 
@@ -1424,9 +1536,9 @@
 
         function deleteCertification(idx) {
             if(!confirm('Are you sure you want to delete this certification?')) return;
-            const certs = JSON.parse(localStorage.getItem('portfolioCertifications') || '[]');
+            const certs = dataManager.load('certifications') || [];
             certs.splice(idx, 1);
-            localStorage.setItem('portfolioCertifications', JSON.stringify(certs));
+            dataManager.save('certifications', certs);
             renderCertifications();
             showMessage('Certification deleted', 'success');
         }
@@ -1517,7 +1629,7 @@
                 updatedAt: new Date().toISOString()
             };
 
-            let exps = JSON.parse(localStorage.getItem('portfolioExperience') || '[]');
+            let exps = dataManager.load('experience') || [];
             
             if(currentExpIndex >= 0) {
                 // Update existing
@@ -1530,14 +1642,14 @@
                 showMessage('Experience saved successfully!', 'success');
             }
 
-            localStorage.setItem('portfolioExperience', JSON.stringify(exps));
+            dataManager.save('experience', exps);
             closeExperienceModal();
             renderExperience();
             syncDataToPreview();
         }
 
         function renderExperience() {
-            const exps = JSON.parse(localStorage.getItem('portfolioExperience') || '[]');
+            const exps = dataManager.load('experience') || [];
             const list = document.getElementById('experienceList');
             list.innerHTML = '';
 
@@ -1581,9 +1693,9 @@
 
         function deleteExperience(idx) {
             if(!confirm('Are you sure you want to delete this experience entry?')) return;
-            const exps = JSON.parse(localStorage.getItem('portfolioExperience') || '[]');
+            const exps = dataManager.load('experience') || [];
             exps.splice(idx, 1);
-            localStorage.setItem('portfolioExperience', JSON.stringify(exps));
+            dataManager.save('experience', exps);
             renderExperience();
             showMessage('Experience deleted', 'success');
         }
@@ -1663,7 +1775,7 @@
                 updatedAt: new Date().toISOString()
             };
 
-            let skills = JSON.parse(localStorage.getItem('portfolioSkills') || '[]');
+            let skills = dataManager.load('skills') || [];
             
             if(currentSkillIndex >= 0) {
                 // Update existing
@@ -1676,14 +1788,14 @@
                 showMessage('Skill saved successfully!', 'success');
             }
 
-            localStorage.setItem('portfolioSkills', JSON.stringify(skills));
+            dataManager.save('skills', skills);
             closeSkillModal();
             renderSkills();
             syncDataToPreview();
         }
 
         function renderSkills() {
-            const skills = JSON.parse(localStorage.getItem('portfolioSkills') || '[]');
+            const skills = dataManager.load('skills') || [];
             const container = document.getElementById('skillsByCategory');
             container.innerHTML = '';
 
@@ -1764,9 +1876,9 @@
 
         function deleteSkill(idx) {
             if(!confirm('Are you sure you want to delete this skill?')) return;
-            const skills = JSON.parse(localStorage.getItem('portfolioSkills') || '[]');
+            const skills = dataManager.load('skills') || [];
             skills.splice(idx, 1);
-            localStorage.setItem('portfolioSkills', JSON.stringify(skills));
+            dataManager.save('skills', skills);
             renderSkills();
             showMessage('Skill deleted', 'success');
         }
@@ -1824,7 +1936,7 @@
         function saveSkillOrder() {
             const skillItems = document.querySelectorAll('.skill-item');
             const newOrder = [];
-            const allSkills = JSON.parse(localStorage.getItem('portfolioSkills') || '[]');
+            const allSkills = dataManager.load('skills') || [];
             
             skillItems.forEach(item => {
                 const skillId = item.getAttribute('data-skill-id');
@@ -1833,7 +1945,7 @@
             });
 
             if(newOrder.length > 0) {
-                localStorage.setItem('portfolioSkills', JSON.stringify(newOrder));
+                dataManager.save('skills', newOrder);
                 showMessage('Skills reordered successfully!', 'success');
                 renderSkills();
                 syncDataToPreview();
@@ -1850,11 +1962,11 @@
         }
 
         // Media Library Management Functions
-        let allMediaItems = [];
+        let allMediaItems = mediaData;
         let currentMediaIndex = -1;
 
         function loadMediaLibrary() {
-            allMediaItems = JSON.parse(localStorage.getItem('portfolioMedia') || '[]');
+            allMediaItems = mediaData;
             renderMediaGallery();
         }
 
@@ -1884,26 +1996,31 @@
             handleMediaFiles(files);
         }
 
-        function handleMediaFiles(files) {
-            Array.from(files).forEach((file, idx) => {
+        async function handleMediaFiles(files) {
+            for (const file of files) {
                 if(!file.type.startsWith('image/')) {
                     showMessage(`${file.name} is not an image file`, 'error');
-                    return;
+                    continue;
                 }
 
                 if(file.size > 5 * 1024 * 1024) {
                     showMessage(`${file.name} exceeds 5MB limit`, 'error');
-                    return;
+                    continue;
                 }
 
-                const reader = new FileReader();
-                reader.onload = (e) => {
+                try {
+                    // Upload to Firebase Storage
+                    const storageRef = storage.ref();
+                    const fileRef = storageRef.child(`media/${Date.now()}_${file.name}`);
+                    await fileRef.put(file);
+                    const url = await fileRef.getDownloadURL();
+
                     const img = new Image();
-                    img.onload = () => {
+                    img.onload = async () => {
                         const mediaItem = {
                             id: Date.now() + Math.random(),
                             filename: file.name,
-                            data: e.target.result,
+                            url: url,
                             size: file.size,
                             type: file.type,
                             width: img.width,
@@ -1916,10 +2033,12 @@
                         showMessage(`${file.name} uploaded successfully!`, 'success');
                         renderMediaGallery();
                     };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            });
+                    img.src = url;
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    showMessage(`Failed to upload ${file.name}`, 'error');
+                }
+            }
 
             // Reset file input
             document.getElementById('mediaFileInput').value = '';
@@ -1973,7 +2092,7 @@
                 
                 card.innerHTML = `
                     <div style="position: relative;">
-                        <img src="${item.data}" alt="${item.filename}" class="media-card-image">
+                        <img src="${item.url}" alt="${item.filename}" class="media-card-image">
                         <div class="media-card-actions">
                             <button class="media-action-btn" onclick="event.stopPropagation(); copyMediaPath('${actualIdx}')" title="Copy URL">
                                 <i data-feather="copy" style="width: 16px; height: 16px;"></i>
@@ -2003,13 +2122,13 @@
             currentMediaIndex = idx;
             const item = allMediaItems[idx];
             
-            document.getElementById('mediaPreviewImage').src = item.data;
+            document.getElementById('mediaPreviewImage').src = item.url;
             document.getElementById('mediaFilename').textContent = item.filename;
             document.getElementById('mediaFileSize').textContent = (item.size / 1024).toFixed(1) + ' KB';
             document.getElementById('mediaDimensions').textContent = item.width + ' × ' + item.height + ' px';
             document.getElementById('mediaFormat').textContent = item.type.split('/')[1].toUpperCase();
             document.getElementById('mediaUploadDate').textContent = new Date(item.uploadedAt).toLocaleDateString();
-            document.getElementById('mediaUrlInput').value = item.data.substring(0, 50) + '...';
+            document.getElementById('mediaUrlInput').value = item.url;
             
             document.getElementById('mediaModal').classList.remove('hidden');
         }
@@ -2029,7 +2148,7 @@
         }
 
         function copyMediaPath(idx) {
-            const url = allMediaItems[idx].data;
+            const url = allMediaItems[idx].url;
             navigator.clipboard.writeText(url).then(() => {
                 showMessage('Image URL copied!', 'success');
             }).catch(() => {
@@ -2085,12 +2204,12 @@
                     reader.readAsDataURL(blob);
                 }, 'image/jpeg', quality / 100);
             };
-            img.src = item.data;
+            img.src = item.url;
         }
 
         // Bio/About Management Functions
         function loadBioData() {
-            const bioData = JSON.parse(localStorage.getItem('portfolioBio') || '{}');
+            const bioData = dataManager.load('bio') || {};
             
             document.getElementById('bioHeadline').value = bioData.headline || '';
             document.getElementById('bioShort').value = bioData.short || '';
@@ -2133,17 +2252,17 @@
                 input.value = '';
             }
 
-            const bioData = JSON.parse(localStorage.getItem('portfolioBio') || '{}');
+            const bioData = dataManager.load('bio') || {};
             if(bioData.photo) {
                 bioData.photo = '';
                 bioData.updatedAt = new Date().toISOString();
-                localStorage.setItem('portfolioBio', JSON.stringify(bioData));
+                dataManager.save('bio', bioData);
             }
 
             showMessage('Profile photo removed', 'success');
         }
 
-        function saveBioData() {
+        async function saveBioData() {
             const headline = document.getElementById('bioHeadline').value.trim();
             const email = document.getElementById('bioEmail').value.trim();
 
@@ -2170,7 +2289,7 @@
                 resumeSize = resumeFile.size;
             }
 
-            const bioData = {
+            bioData = {
                 headline: headline,
                 short: document.getElementById('bioShort').value.trim(),
                 full: document.getElementById('bioFull').value.trim(),
@@ -2191,13 +2310,13 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     bioData.resumeData = e.target.result;
-                    localStorage.setItem('portfolioBio', JSON.stringify(bioData));
+                    dataManager.save('bio', bioData);
                     showMessage('Bio/About information saved successfully!', 'success');
                     syncDataToPreview();
                 };
                 reader.readAsDataURL(resumeFile);
             } else {
-                localStorage.setItem('portfolioBio', JSON.stringify(bioData));
+                dataManager.save('bio', bioData);
                 showMessage('Bio/About information saved successfully!', 'success');
                 syncDataToPreview();
             }
