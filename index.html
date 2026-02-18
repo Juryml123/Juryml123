@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Engineering Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="font-sans antialiased text-gray-800">
+    <!-- Android Diagnostics Banner -->
+    <div id="android-banner" style="display: none; background: #fef3c7; border-bottom: 2px solid #f59e0b; padding: 1rem; text-align: center; position: sticky; top: 0; z-index: 40;">
+        <p style="margin: 0; color: #92400e;">
+            <strong>📱 Android Tab Detected:</strong> If portfolio content isn't loading, please <strong>edit in the CMS</strong> or <strong>refresh this page</strong>. 
+            <button onclick="document.getElementById('android-banner').style.display='none'" style="background: none; border: none; color: #92400e; text-decoration: underline; cursor: pointer;">Dismiss</button>
+        </p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-white shadow-md z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="nav-inner h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-blue-900">My Portfolio</span>
+                </div>
+                <div class="hidden md:flex nav-links items-center">
+                    <a href="#home" class="text-blue-900 hover:text-blue-600 transition">Home</a>
+                    <a href="#about" class="text-blue-900 hover:text-blue-600 transition">About</a>
+                    <div class="nav-dropdown">
+                        <button class="text-blue-900 hover:text-blue-600 transition">Projects</button>
+                        <div class="dropdown-menu" role="menu">
+                            <a href="#projects" role="menuitem" data-cat="mining">Mining</a>
+                            <a href="#projects" role="menuitem" data-cat="petrochemical">Petrochemical</a>
+                            <a href="#projects" role="menuitem" data-cat="shipbuilding">Shipbuilding</a>
+                            <a href="#projects" role="menuitem" data-cat="academic">Academic</a>
+                        </div>
+                    </div>
+                    <a href="#experience" class="text-blue-900 hover:text-blue-600 transition">Experience</a>
+                    <a href="#skills" class="text-blue-900 hover:text-blue-600 transition">Skills</a>
+                    <a href="#certifications" class="text-blue-900 hover:text-blue-600 transition">Certifications</a>
+                    <a href="#about" class="text-blue-900 hover:text-blue-600 transition">Contact</a>
+                    <a href="/resume.pdf" class="btn-resume ml-4 hidden sm:inline-block" download>Download Resume</a>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button id="menu-btn" class="text-blue-900">
+                        <i data-feather="menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden fixed inset-0 bg-white z-40 pt-16">
+        <div class="flex flex-col items-center space-y-8 py-8">
+            <a href="#home" class="text-blue-900 text-xl">Home</a>
+            <a href="#about" class="text-blue-900 text-xl">About</a>
+            <a href="#projects" class="text-blue-900 text-xl">Projects</a>
+            <a href="#skills" class="text-blue-900 text-xl">Skills</a>
+            <a href="#about" class="text-blue-900 text-xl">Contact</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg text-white min-h-screen flex items-center pt-16 relative" id="vanta-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="hero-inner" data-aos="fade-up">
+                <div>
+                    <h1 class="text-4xl md:text-6xl font-bold mb-4">Professional Engineering Solutions</h1>
+                    <div class="text-xl md:text-2xl mb-4 opacity-90">
+                        <span class="hero-typing">Licensed Mechanical Engineer</span>
+                        <span class="typing-cursor" aria-hidden="true"></span>
+                    </div>
+                    <p class="text-lg text-white opacity-90 mb-6">Cross-industry experience in Mining, Digital Twin, and Shipbuilding — data-driven and hands-on.</p>
+                    <div class="cta-group flex items-center">
+                        <a href="#about" class="bg-white text-blue-900 px-6 py-3 rounded-lg font-semibold hover:bg-blue-100 transition">Get in Touch</a>
+                        <a href="#projects" class="border-2 border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-900 transition">View Projects</a>
+                        <a href="/resume.pdf" class="btn-resume ml-4">Download Resume</a>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <div class="hero-photo" role="img" aria-label="Professional photo placeholder">
+                        <!-- TODO: Replace with your professional photo. Use /assets/profile.jpg -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll indicator -->
+            <div class="scroll-indicator" id="scroll-indicator" role="button" aria-label="Scroll to next section">
+                <div class="mouse"><div class="wheel"></div></div>
+                <div class="mt-2 text-sm">Scroll</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8" data-aos="fade-up">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-2">About Me</h2>
+                <p class="text-gray-600">Licensed Mechanical Engineer with cross-industry experience in mining, Petrochem Plant Digital Twin/3D Modelling, and shipbuilding. Below is a short professional summary and quick facts — edit any field marked with <!-- ADD --> comments.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-start">
+                <!-- LEFT COLUMN: About Content -->
+                <div data-aos="fade-right">
+                    <div class="flex justify-center mb-8">
+                        <div class="w-48 h-48 rounded-full bg-gray-100 overflow-hidden shadow-lg">
+                            <!-- PROFESSIONAL PHOTO: replace /assets/profile.jpg -->
+                            <img src="/assets/profile.jpg" alt="Professional photo placeholder" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4" id="bio-current-role">Cadet Mechanical Engineer — Carmen Copper Corporation</h3>
+                    <p class="text-gray-600 mb-4" id="bio-paragraph-1">I currently work as a Cadet Mechanical Engineer at Carmen Copper Corporation (Oct 2024 &ndash; Present), focusing on equipment maintenance and reliability for mining operations. My core responsibilities include condition monitoring, performance analysis, and data-driven maintenance planning using Python and Excel.</p>
+
+                    <p class="text-gray-600 mb-4" id="bio-paragraph-2">Previously, I worked as an Intern Solutions Engineer at TecSurge (Petrochemical) where I contributed to 3D modelling with SmartPlant 3D and digital twin efforts, and I completed an OJT at Tsuneishi Heavy Industries (Shipbuilding) where I gained hands-on exposure to large-scale fabrication and technical drawing interpretation.</p>
+
+                    <p class="text-gray-600 mb-6" id="bio-paragraph-3">My academic work includes a thesis project on a Coconut Dehusking Machine (SolidWorks CAD, FEA, fabrication) and various Python data analysis projects. I build practical engineering solutions with a focus on reliability, manufacturability, and data-backed decisions.</p>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="flex items-center" id="bio-info-company">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i data-feather="briefcase" class="text-blue-600"></i>
+                            </div>
+                            <span class="font-medium">Current: Carmen Copper</span>
+                        </div>
+                        <div class="flex items-center" id="bio-info-experience">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i data-feather="calendar" class="text-blue-600"></i>
+                            </div>
+                            <span class="font-medium">Experience: <!-- ADD years or period -->3+ years</span>
+                        </div>
+                        <div class="flex items-center" id="bio-info-tools">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i data-feather="tool" class="text-blue-600"></i>
+                            </div>
+                            <span class="font-medium">Tools: SolidWorks, SmartPlant 3D, Python</span>
+                        </div>
+                        <div class="flex items-center" id="bio-info-education">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i data-feather="award" class="text-blue-600"></i>
+                            </div>
+                            <span class="font-medium">BS Mechanical Engineering, 2024</span>
+                        </div>
+                    </div>
+
+                    <!-- EDUCATION: Senior High / College split -->
+                    <div class="mb-6">
+                        <!-- Senior High School -->
+                        <div class="mb-4">
+                            <h4 class="text-lg font-semibold">Senior High School</h4>
+                            <p class="text-gray-700 mb-1">Don Andres Soriano National High School — <strong>STEM</strong></p>
+                            <ul class="list-disc ml-5 text-gray-700 mb-2">
+                                <li>Capstone: "Fingerprint Door Locking System" (Arduino-based)</li>
+                                <li>Research: "Andresians' Perceived Level of Security"</li>
+                                <li>Honors: Class Valedictorian; Best in Mathematics</li>
+                            </ul>
+                        </div>
+
+                        <div class="border-t border-gray-200 my-4"></div>
+
+                        <!-- College -->
+                        <div>
+                            <h4 class="text-lg font-semibold">College</h4>
+                            <p class="text-gray-700 mb-1">BS Mechanical Engineering, <strong>2024</strong></p>
+                            <p class="text-gray-700 mb-2">Cebu Technological University &mdash; Main Campus</p>
+                            <ul class="list-disc ml-5 text-gray-700">
+                                <li>Thesis: Coconut Dehusking Machine (SolidWorks CAD, FEA, fabrication)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <a href="/resume.pdf" class="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition">Download Resume</a>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Contact Information -->
+                <div data-aos="fade-left" class="bg-white p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-6 text-blue-900">Get In Touch</h3>
+                    <p class="mb-8 text-gray-600">Feel free to reach out for project inquiries, collaborations, or any questions about my services.</p>
+                    
+                    <div class="space-y-6 mb-8">
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i data-feather="mail" class="w-5 h-5 text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium">Email</h4>
+                                <p class="text-gray-600" id="contact-email">contact@engineerportfolio.com</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i data-feather="phone" class="w-5 h-5 text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium">Phone</h4>
+                                <p class="text-gray-600" id="contact-phone">+1 (555) 123-4567</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i data-feather="map-pin" class="w-5 h-5 text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium">Location</h4>
+                                <p class="text-gray-600" id="contact-location">San Francisco, CA</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="border-t border-gray-200 pt-6 mb-8">
+                        <h4 class="font-medium mb-4">Connect With Me</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="bg-blue-100 p-3 rounded-full hover:bg-blue-200 transition">
+                                <i data-feather="linkedin" class="w-5 h-5 text-blue-600"></i>
+                            </a>
+                            <a href="#" class="bg-blue-100 p-3 rounded-full hover:bg-blue-200 transition">
+                                <i data-feather="twitter" class="w-5 h-5 text-blue-600"></i>
+                            </a>
+                            <a href="#" class="bg-blue-100 p-3 rounded-full hover:bg-blue-200 transition">
+                                <i data-feather="github" class="w-5 h-5 text-blue-600"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Contact Form -->
+                    <div class="border-t border-gray-200 pt-6">
+                        <h4 class="font-medium mb-4">Quick Message</h4>
+                        <form class="space-y-4">
+                            <input type="text" placeholder="Your Name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                            <input type="email" placeholder="Your Email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                            <textarea placeholder="Your Message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"></textarea>
+                            <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12" data-aos="fade-up">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-2">Experience</h2>
+                <p class="text-gray-600">Career timeline showing roles, durations, and responsibilities.</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto" data-aos="fade-up">
+                <div id="experience-timeline" class="timeline">
+                    <div class="timeline-container">
+                        <div class="timeline-content">
+                            <div class="experience-timeline">
+                                <!-- Experience items will be loaded here from localStorage -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8" data-aos="fade-up">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-2">Projects</h2>
+                <p class="text-gray-600">Browse projects by industry category. Click any card to view details.</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="proj-tabs mb-6 justify-center flex" role="tablist" aria-label="Project categories">
+                <button class="proj-tab active" data-cat="all" role="tab" aria-selected="true">All</button>
+                <button class="proj-tab" data-cat="mining" role="tab">Mining</button>
+                <button class="proj-tab" data-cat="petrochemical" role="tab">Petrochemical</button>
+                <button class="proj-tab" data-cat="shipbuilding" role="tab">Shipbuilding</button>
+                <button class="proj-tab" data-cat="academic" role="tab">Academic</button>
+            </div>
+
+            <!-- Grid of project cards -->
+            <div id="projects-grid" class="grid lg:grid-cols-3 md:grid-cols-2 gap-8" data-aos="fade-up">
+                <!-- ==================== MINING PROJECTS SECTION ==================== -->
+                <!-- TODO: Add project title, description, and images below -->
+
+                <!-- PROJECT CARD 1 - MINING - START -->
+                <article class="project-card shadow-md p-0" data-category="mining" aria-labelledby="proj-mining-1">
+                    <div class="skeleton">
+                        <img data-src="/assets/placeholder-mining-1.jpg" alt="Mining project placeholder" class="card-img" loading="lazy">
+                    </div>
+                    <div class="p-6">
+                        <h3 id="proj-mining-1" class="text-xl font-bold text-gray-800 mb-2">Mining Project Placeholder 1</h3>
+                        <p class="text-gray-600 mb-4"><!-- ADD CONTENT HERE: brief description --></p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">Condition Monitoring</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">Python</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <small class="text-sm text-gray-500">Oct 2024</small>
+                            <button class="text-blue-600 font-medium view-details" data-id="mining-1">View Details <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                </article>
+                <!-- PROJECT CARD 1 - MINING - END -->
+
+                <!-- PROJECT CARD 2 - MINING - START -->
+                <article class="project-card shadow-md p-0" data-category="mining" aria-labelledby="proj-mining-2">
+                    <div class="skeleton">
+                        <img data-src="/assets/placeholder-mining-2.jpg" alt="Mining project placeholder" class="card-img" loading="lazy">
+                    </div>
+                    <div class="p-6">
+                        <h3 id="proj-mining-2" class="text-xl font-bold text-gray-800 mb-2">Mining Project Placeholder 2</h3>
+                        <p class="text-gray-600 mb-4"><!-- ADD CONTENT HERE: brief description --></p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">Pumps</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">Reliability</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <small class="text-sm text-gray-500">2024</small>
+                            <button class="text-blue-600 font-medium view-details" data-id="mining-2">View Details <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                </article>
+                <!-- PROJECT CARD 2 - MINING - END -->
+
+                <!-- (Add 2-4 more mining placeholders here) -->
+
+                <!-- ==================== PETROCHEMICAL PROJECTS SECTION ==================== -->
+                <!-- PROJECT CARD 1 - PETROCHEMICAL - START -->
+                <article class="project-card shadow-md p-0" data-category="petrochemical" aria-labelledby="proj-petro-1">
+                    <div class="skeleton">
+                        <img data-src="/assets/placeholder-petro-1.jpg" alt="Petrochemical project placeholder" class="card-img" loading="lazy">
+                    </div>
+                    <div class="p-6">
+                        <h3 id="proj-petro-1" class="text-xl font-bold text-gray-800 mb-2">Petrochemical Placeholder 1</h3>
+                        <p class="text-gray-600 mb-4"><!-- ADD CONTENT HERE --></p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">SmartPlant 3D</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <small class="text-sm text-gray-500">Feb 2024</small>
+                            <button class="text-blue-600 font-medium view-details" data-id="petro-1">View Details <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                </article>
+                <!-- PROJECT CARD 1 - PETROCHEMICAL - END -->
+
+                <!-- (Add 2-3 more petrochemical placeholders here) -->
+
+                <!-- ==================== SHIPBUILDING PROJECTS SECTION ==================== -->
+                <!-- PROJECT CARD 1 - SHIPBUILDING - START -->
+                <article class="project-card shadow-md p-0" data-category="shipbuilding" aria-labelledby="proj-ship-1">
+                    <div class="skeleton">
+                        <img data-src="/assets/placeholder-ship-1.jpg" alt="Shipbuilding project placeholder" class="card-img" loading="lazy">
+                    </div>
+                    <div class="p-6">
+                        <h3 id="proj-ship-1" class="text-xl font-bold text-gray-800 mb-2">Shipbuilding Placeholder 1</h3>
+                        <p class="text-gray-600 mb-4"><!-- ADD CONTENT HERE --></p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">Technical Drawing</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <small class="text-sm text-gray-500">Jul 2023</small>
+                            <button class="text-blue-600 font-medium view-details" data-id="ship-1">View Details <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                </article>
+                <!-- PROJECT CARD 1 - SHIPBUILDING - END -->
+
+                <!-- ==================== ACADEMIC PROJECTS SECTION ==================== -->
+                <!-- PROJECT CARD 1 - ACADEMIC - START -->
+                <article class="project-card shadow-md p-0" data-category="academic" aria-labelledby="proj-acad-1">
+                    <div class="skeleton">
+                        <img data-src="/assets/placeholder-acad-1.jpg" alt="Academic project placeholder" class="card-img" loading="lazy">
+                    </div>
+                    <div class="p-6">
+                        <h3 id="proj-acad-1" class="text-xl font-bold text-gray-800 mb-2">Coconut Dehusking Machine (Thesis)</h3>
+                        <p class="text-gray-600 mb-4"><!-- ADD CONTENT HERE --></p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">SolidWorks</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">FEA</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <small class="text-sm text-gray-500">Thesis</small>
+                            <button class="text-blue-600 font-medium view-details" data-id="acad-1">View Details <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                </article>
+                <!-- PROJECT CARD 1 - ACADEMIC - END -->
+
+                <!-- (Add more academic placeholders here) -->
+            </div>
+
+            <div class="text-center mt-12" data-aos="fade-up">
+                <a href="#projects" class="inline-block border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition">Browse Projects</a>
+            </div>
+        </div>
+
+        <!-- Hidden project detail modal template -->
+        <template id="project-detail-template">
+            <div class="modal-backdrop hidden" role="dialog" aria-modal="true">
+                    <div class="modal-card" tabindex="-1">
+                    <div class="modal-header flex justify-between items-center">
+                        <div>
+                            <h3 class="text-xl font-bold project-title">Project Title</h3>
+                            <small class="text-sm text-gray-500 project-date">Date</small>
+                        </div>
+                        <button class="close-modal text-gray-600 p-2">Close</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="project-hero mb-4">
+                            <img src="/assets/placeholder-hero.jpg" alt="Project hero" class="w-full rounded-md">
+                        </div>
+                        <section class="mb-4">
+                            <h4 class="font-semibold">Challenge / Problem Statement</h4>
+                            <p class="text-gray-600"><!-- ADD CONTENT HERE --></p>
+                        </section>
+                        <section class="mb-4">
+                            <h4 class="font-semibold">My Role & Responsibilities</h4>
+                            <ul class="list-disc ml-5 text-gray-600"><!-- ADD CONTENT HERE --></ul>
+                        </section>
+                        <section class="mb-4">
+                            <h4 class="font-semibold">Tools & Technologies</h4>
+                            <div class="flex flex-wrap gap-2 mt-2 tools-list"><!-- Example badges inserted by JS --></div>
+                        </section>
+                        <section class="mb-4">
+                            <h4 class="font-semibold">Process / Approach</h4>
+                            <p class="text-gray-600"><!-- ADD CONTENT HERE --></p>
+                        </section>
+                        <section class="mb-4">
+                            <h4 class="font-semibold">Results / Outcomes</h4>
+                            <p class="text-gray-600"><!-- ADD CONTENT HERE --></p>
+                        </section>
+                        <section class="mb-4">
+                            <h4 class="font-semibold">Image Gallery</h4>
+                            <div class="grid grid-cols-2 gap-2 mt-2 gallery"><!-- placeholder images --></div>
+                        </section>
+                        <div class="mt-6 text-right">
+                            <button class="bg-gray-100 px-4 py-2 rounded back-to-projects">Back to Projects</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">Technical Skills</h2>
+                <div class="w-20 h-1 bg-blue-600 mx-auto"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div data-aos="fade-right">
+                    <h3 class="text-xl font-semibold mb-4">Mechanical Engineering Software</h3>
+                    <div class="skills-grid">
+                        <div class="skill-card">
+                            <div class="skill-label"><span>SolidWorks</span><span>90%</span></div>
+                            <div class="skill-track"><div class="skill-progress" data-progress="90"></div></div>
+                        </div>
+                        <div class="skill-card">
+                            <div class="skill-label"><span>AutoCAD</span><span>88%</span></div>
+                            <div class="skill-track"><div class="skill-progress" data-progress="88"></div></div>
+                        </div>
+                        <div class="skill-card">
+                            <div class="skill-label"><span>SmartPlant 3D</span><span>75%</span></div>
+                            <div class="skill-track"><div class="skill-progress" data-progress="75"></div></div>
+                        </div>
+                        <div class="skill-card">
+                            <div class="skill-label"><span>FEA (Ansys)</span><span>70%</span></div>
+                            <div class="skill-track"><div class="skill-progress" data-progress="70"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div data-aos="fade-left">
+                    <h3 class="text-xl font-semibold mb-4">Maintenance, Programming & Certifications</h3>
+                    <div class="skills-grid">
+                        <div class="skill-card">
+                            <div class="skill-label"><span>Pumps / Pipelines / Ball Mills</span><span>92%</span></div>
+                            <div class="skill-track"><div class="skill-progress" data-progress="92"></div></div>
+                        </div>
+                        <div class="skill-card">
+                            <div class="skill-label"><span>Condition Monitoring</span><span>88%</span></div>
+                            <div class="skill-track"><div class="skill-progress" data-progress="88"></div></div>
+                        </div>
+                        <div class="skill-card">
+                            <div class="skill-label"><span>Python / Data Analysis</span><span>85%</span></div>
+                            <div class="skill-track"><div class="skill-progress" data-progress="85"></div></div>
+                        </div>
+                        <div class="skill-card">
+                            <div class="skill-label"><span>Excel (Advanced)</span><span>90%</span></div>
+                            <div class="skill-track"><div class="skill-progress" data-progress="90"></div></div>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <button id="toggle-certifications" class="bg-white border border-gray-200 px-4 py-2 rounded">Show Certifications</button>
+                        <p class="section-note">Click to expand certification badges below.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certifications (collapsible) -->
+            <div id="certifications" class="mt-10 hidden" data-aos="fade-up">
+                <h3 class="text-2xl font-semibold mb-4">Certifications</h3>
+                <div id="cert-grid" class="cert-grid">
+                    <!-- Certifications loaded from editor -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Professional Engineer</h3>
+                    <p class="opacity-80">Delivering innovative engineering solutions with precision and expertise since 2010.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="opacity-80 hover:opacity-100 transition">Home</a></li>
+                        <li><a href="#about" class="opacity-80 hover:opacity-100 transition">About</a></li>
+                        <li><a href="#projects" class="opacity-80 hover:opacity-100 transition">Projects</a></li>
+                        <li><a href="#about" class="opacity-80 hover:opacity-100 transition">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Newsletter</h4>
+                    <p class="opacity-80 mb-4">Subscribe to get updates on new projects and insights.</p>
+                    <form class="flex">
+                        <input type="email" placeholder="Your email" class="px-4 py-2 rounded-l-lg focus:outline-none text-gray-900 w-full">
+                        <button type="submit" class="bg-blue-600 px-4 py-2 rounded-r-lg hover:bg-blue-700 transition">
+                            <i data-feather="send"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="opacity-80 mb-4 md:mb-0">© 2023 Professional Engineer. All rights reserved.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="opacity-80 hover:opacity-100 transition">Privacy Policy</a>
+                    <a href="#" class="opacity-80 hover:opacity-100 transition">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
