@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "bio": {
+    "headline": "Licensed Mechanical Engineer | Mining × Shipbuilding × Petrochemical",
+    "short": "I currently work as a Cadet Mechanical Engineer at Carmen Copper Corporation (Oct 2024 – Present), focusing on equipment maintenance and reliability for mining operations. My core responsibilities include condition monitoring, performance analysis, and data-driven maintenance planning using Python and Excel.",
+    "full": "Licensed Mechanical Engineer with cross-industry experience in mining, Petrochem Plant Digital Twin/3D Modelling, and shipbuilding. I currently work as a Cadet Mechanical Engineer at Carmen Copper Corporation (Oct 2024 – Present), focusing on equipment maintenance and reliability for mining operations. My core responsibilities include condition monitoring, performance analysis, and data-driven maintenance planning using Python and Excel.\n\nPreviously, I worked as an Intern Solutions Engineer at TecSurge (Petrochemical) where I contributed to 3D modelling with SmartPlant 3D and digital twin efforts, and I completed an OJT at Tsuneishi Heavy Industries (Shipbuilding) where I gained hands-on exposure to large-scale fabrication and technical drawing interpretation.\n\nMy academic work includes a thesis project on a Coconut Dehusking Machine (SolidWorks CAD, FEA, fabrication) and various Python data analysis projects. I build practical engineering solutions with a focus on reliability, manufacturability, and data-backed decisions.\n\nEducation: BS Mechanical Engineering, 2024 — Cebu Technological University (Main Campus)",
+    "email": "your.email@example.com",
+    "phone": "",
+    "location": "Cebu, Philippines",
+    "linkedin": "https://linkedin.com/in/yourprofile",
+    "github": "",
+    "photo": "",
+    "resumeName": "",
+    "resumeSize": 0,
+    "resumeData": null,
+    "updatedAt": ""
+  },
+  "projects": [
+    {
+      "id": "mining-pump-reliability",
+      "title": "Pump Reliability Analysis",
+      "category": "mining",
+      "status": "completed",
+      "date": "Oct 2024",
+      "description": "Analysis and optimization of pump performance in mining operations",
+      "challenge": "Equipment reliability issues causing operational downtime and maintenance costs in mining operations",
+      "role": "Lead analysis on pump condition monitoring and predictive maintenance systems",
+      "tools": ["Python", "Condition Monitoring", "Data Analysis"],
+      "process": "Implemented condition monitoring system using vibration analysis and performance metrics to identify failure patterns before equipment breakdown",
+      "results": "Reduced unplanned downtime by optimizing maintenance schedules based on data insights",
+      "heroImage": "",
+      "galleryImages": [],
+      "github": "",
+      "docLink": "",
+      "createdAt": ""
+    },
+    {
+      "id": "mining-equipment-maintenance",
+      "title": "Ball Mill & Pipeline Maintenance System",
+      "category": "mining",
+      "status": "completed",
+      "date": "2024",
+      "description": "Comprehensive maintenance strategy for critical equipment including pumps, pipelines, and ball mills",
+      "challenge": "Managing maintenance for multiple critical equipment types to maintain operational continuity",
+      "role": "Equipment maintenance specialist responsible for pumps, pipelines, and ball mills",
+      "tools": ["Pumps", "Reliability Engineering", "Maintenance Planning"],
+      "process": "Developed integrated maintenance planning approach combining preventive and condition-based strategies",
+      "results": "Improved equipment lifecycle management and extended operational lifetime",
+      "heroImage": "",
+      "galleryImages": [],
+      "github": "",
+      "docLink": "",
+      "createdAt": ""
+    },
+    {
+      "id": "petro-smartplant-modeling",
+      "title": "3D Plant Modeling & Digital Twin",
+      "category": "petrochemical",
+      "status": "completed",
+      "date": "Feb 2024",
+      "description": "Development of 3D petrochemical plant models using SmartPlant 3D for engineering documentation and simulation",
+      "challenge": "Creating accurate digital representations of complex petrochemical plant infrastructure for design and operational reference",
+      "role": "Junior engineer responsible for 3D modeling and digital twin development",
+      "tools": ["SmartPlant 3D", "CAD", "Digital Twin", "3D Modelling"],
+      "process": "Utilized SmartPlant 3D to create detailed 3D models capturing equipment layout, piping, and instrumentation",
+      "results": "Delivered comprehensive plant documentation enabling improved design collaboration and operation planning",
+      "heroImage": "",
+      "galleryImages": [],
+      "github": "",
+      "docLink": "",
+      "createdAt": ""
+    },
+    {
+      "id": "ship-bulk-carrier-construction",
+      "title": "Bulk Carrier Construction & Technical Documentation",
+      "category": "shipbuilding",
+      "status": "completed",
+      "date": "Jul 2023",
+      "description": "On-the-job training observing bulk carrier construction and learning shipbuilding processes and techniques",
+      "challenge": "Understanding complex shipbuilding construction techniques and specialized equipment operations",
+      "role": "OJT participant observing bulk carrier construction and technical documentation",
+      "tools": ["Technical Drawings", "CAD Interpretation", "Construction Techniques"],
+      "process": "Participated in bulk carrier construction observing hull fabrication, equipment installation, and specialized machinery (FCB machines, ship benders)",
+      "results": "Gained practical knowledge of shipbuilding processes and specialized engineering applications",
+      "heroImage": "",
+      "galleryImages": [],
+      "github": "",
+      "docLink": "",
+      "createdAt": ""
+    },
+    {
+      "id": "acad-coconut-dehusking-machine",
+      "title": "Coconut Dehusking Machine (Thesis)",
+      "category": "academic",
+      "status": "completed",
+      "date": "Thesis",
+      "description": "University thesis project designing and fabricating an automated coconut dehusking machine",
+      "challenge": "Engineer an efficient mechanical solution for coconut processing while considering manufacturability and safety",
+      "role": "Primary thesis researcher and designer responsible for mechanical design, analysis, and fabrication",
+      "tools": ["SolidWorks", "FEA", "CAD", "Fabrication"],
+      "process": "Performed comprehensive CAD design using SolidWorks, conducted FEA for structural analysis, and oversaw fabrication of working prototype",
+      "results": "Successfully completed and fabricated thesis project demonstrating mechanical engineering design workflow from concept through prototype",
+      "heroImage": "",
+      "galleryImages": [],
+      "github": "",
+      "docLink": "",
+      "createdAt": ""
+    }
+  ],
+  "skills": [
+    {
+      "name": "SolidWorks",
+      "category": "mechanical-software",
+      "proficiency": 90,
+      "icon": "📐",
+      "createdAt": ""
+    },
+    {
+      "name": "AutoCAD",
+      "category": "mechanical-software",
+      "proficiency": 88,
+      "icon": "📏",
+      "createdAt": ""
+    },
+    {
+      "name": "SmartPlant 3D",
+      "category": "mechanical-software",
+      "proficiency": 75,
+      "icon": "🏗️",
+      "createdAt": ""
+    },
+    {
+      "name": "FEA (Ansys)",
+      "category": "mechanical-software",
+      "proficiency": 70,
+      "icon": "⚙️",
+      "createdAt": ""
+    },
+    {
+      "name": "Pumps / Pipelines / Ball Mills",
+      "category": "maintenance-ops",
+      "proficiency": 92,
+      "icon": "🔧",
+      "createdAt": ""
+    },
+    {
+      "name": "Condition Monitoring",
+      "category": "maintenance-ops",
+      "proficiency": 88,
+      "icon": "📊",
+      "createdAt": ""
+    },
+    {
+      "name": "Python / Data Analysis",
+      "category": "programming",
+      "proficiency": 85,
+      "icon": "🐍",
+      "createdAt": ""
+    },
+    {
+      "name": "Excel (Advanced)",
+      "category": "programming",
+      "proficiency": 90,
+      "icon": "📈",
+      "createdAt": ""
+    }
+  ],
+  "experience": [
+    {
+      "company": "Carmen Copper Corporation",
+      "jobTitle": "Cadet Mechanical Engineer",
+      "industry": "mining",
+      "type": "full-time",
+      "startDate": "Oct 2024",
+      "endDate": "Present",
+      "responsibilities": [
+        "Equipment maintenance: pumps, pipelines, ball mills",
+        "Condition monitoring and performance analysis",
+        "Data-driven maintenance planning (Python / Excel)"
+      ],
+      "technologies": ["Python", "Excel", "Condition Monitoring"],
+      "achievements": "",
+      "companyLogo": "",
+      "createdAt": ""
+    },
+    {
+      "company": "TecSurge",
+      "jobTitle": "Intern Solutions Engineer",
+      "industry": "petrochemical",
+      "type": "internship",
+      "startDate": "Feb 2024",
+      "endDate": "May 2024",
+      "responsibilities": [
+        "3D modelling using SmartPlant 3D",
+        "Digital twin development",
+        "Plant engineering documentation"
+      ],
+      "technologies": ["SmartPlant 3D", "Digital Twin", "3D Modelling", "CAD"],
+      "achievements": "",
+      "companyLogo": "",
+      "createdAt": ""
+    },
+    {
+      "company": "Tsuneishi Heavy Industries",
+      "jobTitle": "On-the-Job Training (OJT)",
+      "industry": "shipbuilding",
+      "type": "internship",
+      "startDate": "Jul 2023",
+      "endDate": "Sep 2023",
+      "responsibilities": [
+        "Bulk carrier construction observation",
+        "Technical drawing interpretation",
+        "Exposure to specialized equipment (FCB machines, ship benders)"
+      ],
+      "technologies": ["Technical Drawings", "CAD Interpretation", "Construction"],
+      "achievements": "",
+      "companyLogo": "",
+      "createdAt": ""
+    },
+    {
+      "company": "University",
+      "jobTitle": "Academic Projects & Thesis",
+      "industry": "academic",
+      "type": "other",
+      "startDate": "2019",
+      "endDate": "2023",
+      "responsibilities": [
+        "Coconut Dehusking Machine (Thesis) — SolidWorks, FEA, Fabrication",
+        "Fingerprint Door Locking System — Senior High Capstone (Arduino-based)",
+        "Andresians' Perceived Level of Security — Research study (Senior High)",
+        "Python data analysis projects (certifications)"
+      ],
+      "technologies": ["SolidWorks", "FEA", "Arduino", "Python", "Research"],
+      "achievements": "Completed thesis project with fabrication",
+      "companyLogo": "",
+      "createdAt": ""
+    }
+  ],
+  "certifications": [],
+  "media": [],
+  "settings": {
+    "portfolioPassword": ""
+  },
+  "metadata": {
+    "exportedAt": "",
+    "exportedFrom": "Portfolio Editor CMS"
+  }
+}

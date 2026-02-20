@@ -1,0 +1,2213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Editor — Content Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        :root {
+            --primary: #0b3b73;
+            --accent: #b75a1b;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        .sidebar { background: var(--primary); }
+        .sidebar-link { color: #e0f2fe; padding: 0.75rem 1.25rem; display: block; cursor: pointer; border-left: 3px solid transparent; transition: all 0.2s; }
+        .sidebar-link:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-link.active { color: white; border-color: var(--accent); background: rgba(255,255,255,0.1); font-weight: 600; }
+        .editor-section { display: none; }
+        .editor-section.active { display: block; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--primary); }
+        .form-control { width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.375rem; font-size: 1rem; }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(11,59,115,0.1); }
+        .btn { padding: 0.625rem 1.25rem; border-radius: 0.375rem; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #0a2d5a; }
+        .btn-secondary { background: #e5e7eb; color: #1f2937; }
+        .btn-secondary:hover { background: #d1d5db; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; margin-right: 0.5rem; }
+        .badge-mining { background: #fcd34d; color: #78350f; }
+        .badge-petrochemical { background: #a78bfa; color: #3f0f12; }
+        .badge-shipbuilding { background: #67e8f9; color: #0e3a4c; }
+        .badge-academic { background: #86efac; color: #14532d; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .table th, .table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        .table th { background: #f3f4f6; font-weight: 600; }
+        .table tbody tr:hover { background: #fafafa; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: white; border-radius: 0.5rem; max-width: 600px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 2rem; }
+        .modal-overlay.hidden { display: none; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; }
+        .stat-value { font-size: 1.875rem; font-weight: 700; color: var(--primary); }
+        .stat-label { color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem; }
+        .message { padding: 1rem; border-radius: 0.375rem; margin-bottom: 1rem; }
+        .message.success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+        .message.error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .message.warning { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .table-sortable { cursor: pointer; user-select: none; position: relative; }
+        .table-sortable:hover { background: #f0f9ff; }
+        .sort-indicator { display: inline-block; margin-left: 0.5rem; font-size: 0.75rem; color: var(--primary); }
+        .project-row { display: table-row; cursor: move; position: relative; }
+        .project-row.dragging { opacity: 0.5; background: #f0f9ff; }
+        .project-row.drag-over { background: #dbeafe; }
+        .drag-handle { cursor: grab; color: #9ca3af; width: 20px; text-align: center; }
+        .drag-handle:active { cursor: grabbing; }
+        .projects-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .projects-table th { padding: 1rem; text-align: left; background: #f3f4f6; font-weight: 600; border-bottom: 2px solid #e5e7eb; }
+        .projects-table td { padding: 1rem; border-bottom: 1px solid #e5e7eb; }
+        .projects-table tbody tr:hover { background: #fafafa; }
+        .projects-table img.thumbnail { width: 48px; height: 48px; border-radius: 0.375rem; object-fit: cover; }
+        .actions-cell { display: flex; gap: 0.5rem; }
+        .filter-controls { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+        .sort-select { padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.375rem; background: white; cursor: pointer; }
+        .badge-status { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+        .badge-status.completed { background: #d1fae5; color: #065f46; }
+        .badge-status.ongoing { background: #fef3c7; color: #92400e; }
+        .badge-status.academic { background: #d1d5db; color: #374151; }
+        .skill-category { margin-bottom: 2rem; padding: 1.5rem; background: white; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .skill-category-title { font-size: 1.25rem; font-weight: 600; color: var(--primary); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .skill-count { font-size: 0.875rem; background: #e5e7eb; color: #374151; padding: 0.25rem 0.75rem; border-radius: 9999px; }
+        .skill-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.375rem; margin-bottom: 0.75rem; cursor: move; }
+        .skill-item.dragging { opacity: 0.5; background: #f0f9ff; }
+        .skill-item.drag-over { background: #dbeafe; }
+        .skill-left { display: flex; align-items: center; gap: 1rem; flex: 1; }
+        .skill-icon { font-size: 1.5rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .skill-info { flex: 1; }
+        .skill-name { font-weight: 600; color: #1f2937; }
+        .skill-proficiency-display { font-size: 0.875rem; color: #6b7280; }
+        .skill-proficiency-bar { width: 100px; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; margin-top: 0.25rem; }
+        .skill-proficiency-fill { height: 100%; background: linear-gradient(90deg, #0b3b73, #b75a1b); border-radius: 3px; }
+        .skill-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+        .skill-drag-handle { cursor: grab; color: #9ca3af; margin-right: 0.5rem; }
+        .skill-drag-handle:active { cursor: grabbing; }
+        .prof-level-btn { padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: white; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; }
+        .prof-level-btn:hover { background: #f3f4f6; }
+        .prof-level-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        #mediaUploadArea { transition: all 0.2s; }
+        #mediaUploadArea.drag-over { background: #dbeafe; border-color: #0b3b73; }
+        .media-card { background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; position: relative; transition: all 0.2s; cursor: pointer; }
+        .media-card:hover { box-shadow: 0 4px 6px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .media-card.selected { border-color: var(--primary); background: #f0f9ff; }
+        .media-card-image { width: 100%; aspect-ratio: 1; object-fit: cover; background: #f3f4f6; }
+        .media-card-info { padding: 0.75rem; }
+        .media-filename { font-weight: 600; font-size: 0.875rem; color: #1f2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .media-details { font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem; }
+        .media-card-actions { position: absolute; top: 0.5rem; right: 0.5rem; display: flex; gap: 0.25rem; opacity: 0; transition: opacity 0.2s; }
+        .media-card:hover .media-card-actions { opacity: 1; }
+        .media-action-btn { background: white; border: none; width: 32px; height: 32px; border-radius: 0.375rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; }
+        .media-action-btn:hover { background: #f3f4f6; transform: scale(1.05); }
+        .media-action-btn.danger:hover { background: #fee2e2; color: #dc2626; }
+        .media-checkbox { position: absolute; top: 0.5rem; left: 0.5rem; width: 20px; height: 20px; cursor: pointer; }
+        .media-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 1rem; }
+        .media-modal.hidden { display: none; }
+        .media-modal-content { background: white; border-radius: 0.5rem; max-width: 700px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 2rem; }
+        .media-preview-container { margin-bottom: 1.5rem; }
+        .media-preview-image { max-width: 100%; max-height: 400px; border-radius: 0.5rem; margin-bottom: 1rem; }
+        .media-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .media-info-item { background: #f3f4f6; padding: 1rem; border-radius: 0.375rem; }
+        .media-info-label { font-weight: 600; color: var(--primary); font-size: 0.875rem; }
+        .media-info-value { margin-top: 0.25rem; color: #1f2937; word-break: break-all; }
+        #bioPhotoPreview { display: flex; align-items: center; justify-content: center; }
+        #bioPhotoPreview img { max-width: 150px; max-height: 150px; border-radius: 0.5rem; border: 2px solid #e5e7eb; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar w-64 text-white p-4 shadow-lg">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold">Portfolio CMS</h1>
+                <p class="text-sm opacity-75 mt-1">Content Manager</p>
+            </div>
+            <nav class="space-y-2">
+                <div class="sidebar-link active" onclick="switchSection('dashboard')">
+                    <i data-feather="home" class="inline mr-2" style="width: 18px;"></i> Dashboard
+                </div>
+                <div class="sidebar-link" onclick="switchSection('bio')">
+                    <i data-feather="user" class="inline mr-2" style="width: 18px;"></i> Bio / About
+                </div>
+                <div class="sidebar-link" onclick="switchSection('projects')">
+                    <i data-feather="briefcase" class="inline mr-2" style="width: 18px;"></i> Projects
+                </div>
+                <div class="sidebar-link" onclick="switchSection('experience')">
+                    <i data-feather="award" class="inline mr-2" style="width: 18px;"></i> Experience
+                </div>
+                <div class="sidebar-link" onclick="switchSection('skills')">
+                    <i data-feather="zap" class="inline mr-2" style="width: 18px;"></i> Skills
+                </div>
+                <div class="sidebar-link" onclick="switchSection('certifications')">
+                    <i data-feather="badge" class="inline mr-2" style="width: 18px;"></i> Certifications
+                </div>
+                <div class="sidebar-link" onclick="switchSection('media')">
+                    <i data-feather="image" class="inline mr-2" style="width: 18px;"></i> Media Library
+                </div>
+                <div class="sidebar-link" onclick="switchSection('settings')">
+                    <i data-feather="settings" class="inline mr-2" style="width: 18px;"></i> Settings
+                </div>
+                <div class="sidebar-link" onclick="switchSection('preview')">
+                    <i data-feather="eye" class="inline mr-2" style="width: 18px;"></i> Preview
+                </div>
+            </nav>
+            <div class="border-t border-blue-700 mt-8 pt-4">
+                <div class="sidebar-link" onclick="exportData()" style="color: #fbbf24;">
+                    <i data-feather="download" class="inline mr-2" style="width: 18px;"></i> Export Data
+                </div>
+                <div class="sidebar-link" onclick="document.getElementById('importFile').click()" style="color: #a78bfa;">
+                    <i data-feather="upload" class="inline mr-2" style="width: 18px;"></i> Import Data
+                </div>
+                <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importData(event)">
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <div class="p-8">
+                <!-- Messages -->
+                <div id="messageBox"></div>
+
+                <!-- DASHBOARD SECTION -->
+                <section id="dashboard" class="editor-section active">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">Dashboard</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-projects">0</div>
+                            <div class="stat-label">Total Projects</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-mining">0</div>
+                            <div class="stat-label">Mining Projects</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-petrochemical">0</div>
+                            <div class="stat-label">Petrochemical</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-academic">0</div>
+                            <div class="stat-label">Academic</div>
+                        </div>
+                    </div>
+                    <div class="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h3 class="font-semibold text-blue-900 mb-2">Quick Tips</h3>
+                        <ul class="text-sm text-blue-800 space-y-1">
+                            <li>✓ All changes are automatically saved to browser storage</li>
+                            <li>✓ Export your data as JSON for backup or to share</li>
+                            <li>✓ Use the Preview section to see changes before publishing</li>
+                            <li>✓ Images can be uploaded or linked from the Media Library</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- BIO/ABOUT SECTION -->
+                <section id="bio" class="editor-section">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">Bio / About Me</h2>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="form-group">
+                            <label class="form-label">Professional Headline *</label>
+                            <input type="text" id="bioHeadline" class="form-control" placeholder="e.g., Licensed Mechanical Engineer | Mining × Shipbuilding × Petrochemical">
+                            <small class="text-gray-600">One-line professional summary (50-100 characters)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Short Bio *</label>
+                            <textarea id="bioShort" class="form-control" rows="3" placeholder="Brief introduction (2-3 sentences)"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">About Me (Full)</label>
+                            <textarea id="bioFull" class="form-control" rows="6" placeholder="Detailed bio and professional background..."></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="form-label">Profile Photo</label>
+                                <input type="file" id="bioPhoto" class="form-control" accept="image/*" onchange="previewBioPhoto(event)">
+                                <div id="bioPhotoPreview" style="margin-top: 1rem;"></div>
+                                <div style="margin-top: 0.75rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                                    <button type="button" class="btn btn-secondary" onclick="clearBioPhoto()">Remove Photo</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Resume PDF</label>
+                                <input type="file" id="bioResume" class="form-control" accept=".pdf">
+                                <small id="bioResumeFile" class="text-gray-600 block mt-2"></small>
+                            </div>
+                        </div>
+
+                        <hr class="my-6">
+
+                        <h3 class="text-lg font-semibold mb-4">Contact Information</h3>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="form-label">Email *</label>
+                                <input type="email" id="bioEmail" class="form-control" placeholder="your.email@example.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" id="bioPhone" class="form-control" placeholder="+1 (555) 000-0000">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Location</label>
+                                <input type="text" id="bioLocation" class="form-control" placeholder="City, Country">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">LinkedIn Profile</label>
+                                <input type="url" id="bioLinkedIn" class="form-control" placeholder="https://linkedin.com/in/yourprofile">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">GitHub Profile (Optional)</label>
+                                <input type="url" id="bioGitHub" class="form-control" placeholder="https://github.com/yourprofile">
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 mt-6">
+                            <button class="btn btn-primary" onclick="saveBioData()">Save Changes</button>
+                            <button class="btn btn-secondary" onclick="resetBioForm()">Reset</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PROJECTS SECTION -->
+                <section id="projects" class="editor-section">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Projects Manager</h2>
+                    <div class="mb-4">
+                        <button class="btn btn-primary" onclick="openProjectModal()">+ Add New Project</button>
+                    </div>
+
+                    <!-- Filter & Sort Controls -->
+                    <div class="filter-controls">
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700 mr-2">Filter by Category:</label>
+                            <select id="categoryFilter" class="sort-select" onchange="filterAndDisplayProjects()">
+                                <option value="all">All Categories</option>
+                                <option value="mining">Mining</option>
+                                <option value="petrochemical">Petrochemical</option>
+                                <option value="shipbuilding">Shipbuilding</option>
+                                <option value="academic">Academic</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700 mr-2">Sort by:</label>
+                            <select id="sortBy" class="sort-select" onchange="filterAndDisplayProjects()">
+                                <option value="title">Title (A-Z)</option>
+                                <option value="title-desc">Title (Z-A)</option>
+                                <option value="date">Date (Newest)</option>
+                                <option value="date-old">Date (Oldest)</option>
+                                <option value="status">Status</option>
+                                <option value="category">Category</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Projects Table -->
+                    <div style="overflow-x: auto;">
+                        <table class="projects-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30px;"></th>
+                                    <th style="width: 60px;">Thumbnail</th>
+                                    <th class="table-sortable" onclick="sortProjects('title')">
+                                        Title <span class="sort-indicator" id="sort-title"></span>
+                                    </th>
+                                    <th class="table-sortable" onclick="sortProjects('category')">
+                                        Category <span class="sort-indicator" id="sort-category"></span>
+                                    </th>
+                                    <th class="table-sortable" onclick="sortProjects('date')">
+                                        Date <span class="sort-indicator" id="sort-date"></span>
+                                    </th>
+                                    <th class="table-sortable" onclick="sortProjects('status')">
+                                        Status <span class="sort-indicator" id="sort-status"></span>
+                                    </th>
+                                    <th style="width: 150px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projectsTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center text-gray-500 py-4">Loading projects...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- EXPERIENCE SECTION -->
+                <section id="experience" class="editor-section">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Experience Manager</h2>
+                    <div class="mb-4">
+                        <button class="btn btn-primary" onclick="openExperienceModal()">+ Add Experience</button>
+                    </div>
+
+                    <!-- Experience List -->
+                    <div id="experienceList" class="space-y-3"></div>
+                </section>
+
+                <!-- SKILLS SECTION -->
+                <section id="skills" class="editor-section">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Skills Manager</h2>
+                    <div class="mb-4">
+                        <button class="btn btn-primary" onclick="openSkillModal()">+ Add Skill</button>
+                    </div>
+
+                    <!-- Skills by Category -->
+                    <div id="skillsByCategory"></div>
+                </section>
+
+                <!-- CERTIFICATIONS SECTION -->
+                <section id="certifications" class="editor-section">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Certifications Manager</h2>
+                    <div class="mb-4">
+                        <button class="btn btn-primary" onclick="openCertificationModal()">+ Add Certification</button>
+                    </div>
+
+                    <!-- Certifications List -->
+                    <div id="certificationsList" class="space-y-3"></div>
+                </section>
+
+                <!-- MEDIA LIBRARY SECTION -->
+                <section id="media" class="editor-section">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Media Library</h2>
+                    
+                    <!-- Upload Area -->
+                    <div id="mediaUploadArea" class="border-2 border-dashed border-blue-400 bg-blue-50 rounded-lg p-8 text-center mb-6 cursor-pointer" ondrop="handleMediaDrop(event)" ondragover="allowMediaDrop(event)" ondragleave="disallowMediaDrop(event)" onclick="document.getElementById('mediaFileInput').click()">
+                        <div style="margin-bottom: 1rem;">
+                            <i data-feather="upload-cloud" style="width: 48px; height: 48px; color: #0b3b73; margin: 0 auto; display: block;"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Drag and drop images here</h3>
+                        <p class="text-gray-600 text-sm mb-3">or click to browse from your computer</p>
+                        <small class="text-gray-500">Supported formats: JPG, PNG, GIF, WebP (Max 5MB per file)</small>
+                        <input type="file" id="mediaFileInput" accept="image/*" multiple style="display: none;" onchange="handleMediaFileInput(event)">
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <input type="text" id="mediaSearch" class="form-control" placeholder="Search images by filename..." onkeyup="filterMediaGallery()">
+                        </div>
+                        <div>
+                            <select id="mediaSort" class="sort-select" onchange="filterMediaGallery()">
+                                <option value="date-desc">Newest First</option>
+                                <option value="date-asc">Oldest First</option>
+                                <option value="name-asc">Name (A-Z)</option>
+                                <option value="name-desc">Name (Z-A)</option>
+                                <option value="size-asc">Size (Small First)</option>
+                                <option value="size-desc">Size (Large First)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" onclick="optimizeSelectedImages()" title="Compress selected images">Optimize Selected</button>
+                    </div>
+
+                    <!-- Media Gallery -->
+                    <div id="mediaGallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;"></div>
+
+                    <!-- Empty State -->
+                    <div id="mediaEmpty" class="text-center py-12 text-gray-500">
+                        <i data-feather="image" style="width: 48px; height: 48px; margin: 0 auto; display: block; opacity: 0.5; margin-bottom: 1rem;"></i>
+                        <p>No images uploaded yet. Start by uploading an image above.</p>
+                    </div>
+                </section>
+
+                <!-- SETTINGS SECTION -->
+                <section id="settings" class="editor-section">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">Settings</h2>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="form-group">
+                            <label class="form-label">Portfolio Password (Optional)</label>
+                            <input type="password" id="portfolioPassword" class="form-control" placeholder="Leave blank for no password">
+                            <small class="text-gray-600">Protects access to this editor page</small>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                    </div>
+                    <div class="mt-8 bg-red-50 p-6 rounded-lg border border-red-200">
+                        <h3 class="font-semibold text-red-900 mb-2">Danger Zone</h3>
+                        <button class="btn btn-danger" onclick="if(confirm('Are you sure? This will clear all data.')) clearAllData()">Clear All Data</button>
+                    </div>
+                </section>
+
+                <!-- PREVIEW SECTION -->
+                <section id="preview" class="editor-section">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">Preview</h2>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <iframe id="previewFrame" src="index.html" style="width: 100%; height: 600px; border: 1px solid #e5e7eb;"></iframe>
+                        <p class="mt-4 text-gray-600 text-sm">This is a preview of your main portfolio. Refresh the main portfolio page to see live changes.</p>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Project Modal -->
+    <div id="projectModal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 700px;">
+            <h3 class="text-xl font-bold mb-4">Add/Edit Project</h3>
+            
+            <!-- Tabs -->
+            <div class="flex gap-2 border-b border-gray-300 mb-6">
+                <button class="proj-form-tab active pb-2 px-4 border-b-2 border-primary font-semibold" data-tab="basic" onclick="switchFormTab('basic')">Basic Info</button>
+                <button class="proj-form-tab pb-2 px-4" data-tab="details" onclick="switchFormTab('details')">Details</button>
+                <button class="proj-form-tab pb-2 px-4" data-tab="media" onclick="switchFormTab('media')">Media & Links</button>
+            </div>
+
+            <!-- Basic Info Tab -->
+            <div id="tab-basic" class="form-tab active">
+                <div class="form-group">
+                    <label class="form-label">Project Title *</label>
+                    <input type="text" id="projTitle" class="form-control" placeholder="e.g., Pump Reliability Analysis">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Category *</label>
+                        <input type="text" id="projCategory" class="form-control" placeholder="e.g., Mining, Petrochemical, Shipbuilding">
+                        <small class="text-gray-600">Enter any category name (e.g., Mining, Petrochemical, Shipbuilding, Academic, etc.)</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select id="projStatus" class="form-control">
+                            <option value="">Select Status</option>
+                            <option value="completed">Completed</option>
+                            <option value="ongoing">Ongoing</option>
+                            <option value="academic">Academic</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date/Duration</label>
+                    <input type="text" id="projDate" class="form-control" placeholder="e.g., Oct 2024 - Present or Oct 2024">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Short Description *</label>
+                    <textarea id="projDescription" class="form-control" rows="4" placeholder="2-3 sentences summarizing the project..."></textarea>
+                </div>
+            </div>
+
+            <!-- Details Tab -->
+            <div id="tab-details" class="form-tab" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">Challenge/Problem</label>
+                    <textarea id="projChallenge" class="form-control" rows="3" placeholder="What problem did you solve?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">My Role & Responsibilities</label>
+                    <textarea id="projRole" class="form-control" rows="3" placeholder="Your specific contributions and responsibilities..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tools & Technologies</label>
+                    <input type="text" id="projTools" class="form-control" placeholder="e.g., Python, Excel, SolidWorks, SmartPlant 3D (comma-separated)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Process/Approach</label>
+                    <textarea id="projProcess" class="form-control" rows="3" placeholder="How did you approach this project?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Results/Outcomes</label>
+                    <textarea id="projResults" class="form-control" rows="3" placeholder="What were the results and outcomes?"></textarea>
+                </div>
+            </div>
+
+            <!-- Media & Links Tab -->
+            <div id="tab-media" class="form-tab" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">Hero Image</label>
+                    <input type="file" id="projHeroImg" class="form-control" accept="image/*" onchange="previewImage(event, 'heroPreview')">
+                    <div id="heroPreview" style="margin-top: 1rem;"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gallery Images (up to 4)</label>
+                    <input type="file" id="projGalleryImg" class="form-control" accept="image/*" multiple onchange="previewGallery(event)">
+                    <div id="galleryPreview" style="margin-top: 1rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">GitHub Link</label>
+                        <input type="url" id="projGithub" class="form-control" placeholder="https://github.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Documentation Link</label>
+                        <input type="url" id="projDocLink" class="form-control" placeholder="https://...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-2 mt-6">
+                <button class="btn btn-primary flex-1" onclick="saveProject()">Save Project</button>
+                <button class="btn btn-secondary flex-1" onclick="closeProjectModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Experience Modal -->
+    <div id="experienceModal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 700px;">
+            <h3 class="text-xl font-bold mb-4">Add/Edit Work Experience</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Company Name *</label>
+                <input type="text" id="expCompany" class="form-control" placeholder="e.g., Carmen Copper Corporation">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Job Title *</label>
+                <input type="text" id="expJobTitle" class="form-control" placeholder="e.g., Cadet Mechanical Engineer">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label class="form-label">Industry *</label>
+                    <select id="expIndustry" class="form-control">
+                        <option value="">Select Industry</option>
+                        <option value="mining">Mining</option>
+                        <option value="shipbuilding">Shipbuilding</option>
+                        <option value="petrochemical">Petrochemical</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Employment Type</label>
+                    <select id="expType" class="form-control">
+                        <option value="full-time">Full-time</option>
+                        <option value="part-time">Part-time</option>
+                        <option value="internship">Internship</option>
+                        <option value="contract">Contract</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label class="form-label">Start Date *</label>
+                    <input type="text" id="expStartDate" class="form-control" placeholder="e.g., Oct 2024">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">End Date</label>
+                    <input type="text" id="expEndDate" class="form-control" placeholder="e.g., Present or Dec 2024">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Company Logo</label>
+                <input type="file" id="expLogo" class="form-control" accept="image/*" onchange="previewExpLogo(event)">
+                <div id="expLogoPreview" style="margin-top: 1rem;"></div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Key Responsibilities (one per line)</label>
+                <textarea id="expResponsibilities" class="form-control" rows="4" placeholder="Designed equipment components&#10;Analyzed equipment failures&#10;Led team projects"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Technologies Used (comma-separated)</label>
+                <input type="text" id="expTechnologies" class="form-control" placeholder="e.g., CAD, Python, Excel, MATLAB">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Key Achievements</label>
+                <textarea id="expAchievements" class="form-control" rows="3" placeholder="Reduced downtime by 35%, Improved efficiency by 20%..."></textarea>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex gap-2 mt-6">
+                <button class="btn btn-primary flex-1" onclick="saveExperience()">Save Experience</button>
+                <button class="btn btn-secondary flex-1" onclick="closeExperienceModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Certification Modal -->
+    <div id="certificationModal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 700px;">
+            <h3 class="text-xl font-bold mb-4">Add/Edit Certification</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Certification Name *</label>
+                <input type="text" id="certName" class="form-control" placeholder="e.g., Professional Engineer (PE) License">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Issuing Organization *</label>
+                <input type="text" id="certOrganization" class="form-control" placeholder="e.g., Professional Regulation Commission (PRC)">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label class="form-label">Issue Date *</label>
+                    <input type="text" id="certIssueDate" class="form-control" placeholder="e.g., Feb 2024">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Credential ID</label>
+                    <input type="text" id="certCredentialId" class="form-control" placeholder="(Optional)">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Verification Link</label>
+                <input type="url" id="certVerificationLink" class="form-control" placeholder="https://verify.example.com (optional)">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Badge/Logo</label>
+                <input type="file" id="certBadge" class="form-control" accept="image/*" onchange="previewCertBadge(event)">
+                <div id="certBadgePreview" style="margin-top: 1rem;"></div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Associated Skills (comma-separated)</label>
+                <input type="text" id="certSkills" class="form-control" placeholder="e.g., Mechanical Design, ISO 9001, Safety Management">
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex gap-2 mt-6">
+                <button class="btn btn-primary flex-1" onclick="saveCertification()">Save Certification</button>
+                <button class="btn btn-secondary flex-1" onclick="closeCertificationModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills Modal -->
+    <div id="skillModal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <h3 class="text-xl font-bold mb-4">Add/Edit Skill</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Skill Name *</label>
+                <input type="text" id="skillName" class="form-control" placeholder="e.g., SolidWorks, Python, AutoCAD">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Category *</label>
+                <select id="skillCategory" class="form-control">
+                    <option value="">Select Category</option>
+                    <option value="mechanical-software">Mechanical Engineering Software</option>
+                    <option value="maintenance-ops">Maintenance & Operations</option>
+                    <option value="programming">Programming & Data Analysis</option>
+                    <option value="other">General / Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Proficiency Level *</label>
+                <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 0.5rem;">
+                    <input type="range" id="skillProficiency" min="0" max="100" value="50" class="flex-1" style="cursor: pointer;">
+                    <span id="proficiencyValue" style="font-weight: 600; color: var(--primary); min-width: 50px;">50%</span>
+                </div>
+                <small class="text-gray-600">Or select a level:</small>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                    <button type="button" class="prof-level-btn" onclick="setSkillLevel(25)" data-level="25">Beginner</button>
+                    <button type="button" class="prof-level-btn" onclick="setSkillLevel(50)" data-level="50">Intermediate</button>
+                    <button type="button" class="prof-level-btn" onclick="setSkillLevel(75)" data-level="75">Advanced</button>
+                    <button type="button" class="prof-level-btn" onclick="setSkillLevel(95)" data-level="95">Expert</button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Icon (URL or Emoji)</label>
+                <input type="text" id="skillIcon" class="form-control" placeholder="e.g., 🔧 or https://icon-url.png or feather-icon-name">
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex gap-2 mt-6">
+                <button class="btn btn-primary flex-1" onclick="saveSkill()">Save Skill</button>
+                <button class="btn btn-secondary flex-1" onclick="closeSkillModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Media Details Modal -->
+    <div id="mediaModal" class="media-modal hidden">
+        <div class="media-modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 class="text-xl font-bold">Image Details</h3>
+                <button onclick="closeMediaModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #6b7280;">&times;</button>
+            </div>
+            
+            <div class="media-preview-container">
+                <img id="mediaPreviewImage" src="" alt="Image preview" class="media-preview-image">
+                <div style="text-align: center;">
+                    <small id="mediaFilename" class="text-gray-600"></small>
+                </div>
+            </div>
+
+            <div class="media-info-grid">
+                <div class="media-info-item">
+                    <div class="media-info-label">File Size</div>
+                    <div class="media-info-value" id="mediaFileSize">--</div>
+                </div>
+                <div class="media-info-item">
+                    <div class="media-info-label">Dimensions</div>
+                    <div class="media-info-value" id="mediaDimensions">--</div>
+                </div>
+                <div class="media-info-item">
+                    <div class="media-info-label">Upload Date</div>
+                    <div class="media-info-value" id="mediaUploadDate">--</div>
+                </div>
+                <div class="media-info-item">
+                    <div class="media-info-label">Format</div>
+                    <div class="media-info-value" id="mediaFormat">--</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Image URL/Path</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="mediaUrlInput" class="form-control" readonly>
+                    <button class="btn btn-secondary" onclick="copyMediaUrl()" style="flex-shrink: 0;">Copy</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Image Optimization</label>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="optimizeMediaImage(50)">Compress 50%</button>
+                    <button class="btn btn-secondary" onclick="optimizeMediaImage(75)">Compress 75%</button>
+                    <button class="btn btn-secondary" onclick="optimizeMediaImage(90)">Compress 90%</button>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem;">
+                <button class="btn btn-danger flex-1" onclick="deleteCurrentMedia()">Delete Image</button>
+                <button class="btn btn-secondary flex-1" onclick="closeMediaModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="editor-data.js"></script>
+    <script>
+        feather.replace();
+        let currentEditIndex = -1;
+        let currentSortColumn = null;
+        let sortDirection = 'asc';
+        let allProjects = [];
+        let filteredProjects = [];
+
+        function switchSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.editor-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            event.target.closest('.sidebar-link').classList.add('active');
+
+            // Initialize section-specific content
+            if(sectionId === 'projects') {
+                renderProjects();
+            } else if(sectionId === 'bio') {
+                loadBioData();
+            } else if(sectionId === 'experience') {
+                renderExperience();
+            } else if(sectionId === 'skills') {
+                renderSkills();
+            } else if(sectionId === 'media') {
+                loadMediaLibrary();
+            } else if(sectionId === 'certifications') {
+                renderCertifications();
+            } else if(sectionId === 'dashboard') {
+                updateDashboardStats();
+            }
+        }
+
+        function switchFormTab(tabName) {
+            // Hide all form tabs
+            document.querySelectorAll('.form-tab').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.proj-form-tab').forEach(t => t.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById('tab-' + tabName).style.display = 'block';
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+        }
+
+        function updateDashboardStats() {
+            const projects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
+            document.getElementById('stat-projects').textContent = projects.length;
+            document.getElementById('stat-mining').textContent = projects.filter(p => p.category === 'mining').length;
+            document.getElementById('stat-petrochemical').textContent = projects.filter(p => p.category === 'petrochemical').length;
+            document.getElementById('stat-academic').textContent = projects.filter(p => p.category === 'academic').length;
+        }
+
+        function renderProjects() {
+            allProjects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
+            updateCategoryFilter();
+            filterAndDisplayProjects();
+        }
+
+        function updateCategoryFilter() {
+            const filterSelect = document.getElementById('categoryFilter');
+            if(!filterSelect) return;
+
+            // Get unique categories from all projects
+            const categories = [...new Set(allProjects.map(p => p.category).filter(Boolean).sort())];
+
+            // Store current selection
+            const currentValue = filterSelect.value;
+
+            // Rebuild the dropdown
+            filterSelect.innerHTML = '<option value="all">All Categories</option>';
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+                filterSelect.appendChild(option);
+            });
+
+            // Restore selection if it still exists
+            if(currentValue && [...filterSelect.options].some(opt => opt.value === currentValue)) {
+                filterSelect.value = currentValue;
+            }
+        }
+
+        function filterAndDisplayProjects() {
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+
+            // Filter projects
+            filteredProjects = allProjects.filter(proj => {
+                return categoryFilter === 'all' || proj.category === categoryFilter;
+            });
+
+            // Sort projects
+            sortFilteredProjects(sortBy);
+
+            // Render table
+            renderProjectsTable();
+        }
+
+        function sortFilteredProjects(sortBy) {
+            const sortMap = {
+                'title': (a, b) => a.title.localeCompare(b.title),
+                'title-desc': (a, b) => b.title.localeCompare(a.title),
+                'date': (a, b) => {
+                    // Try to parse dates, fallback to string comparison
+                    const dateA = new Date(a.date || '0') || 0;
+                    const dateB = new Date(b.date || '0') || 0;
+                    return dateB - dateA;
+                },
+                'date-old': (a, b) => {
+                    const dateA = new Date(a.date || '0') || 0;
+                    const dateB = new Date(b.date || '0') || 0;
+                    return dateA - dateB;
+                },
+                'status': (a, b) => (a.status || 'completed').localeCompare(b.status || 'completed'),
+                'category': (a, b) => (a.category || '').localeCompare(b.category || '')
+            };
+
+            if(sortMap[sortBy]) {
+                filteredProjects.sort(sortMap[sortBy]);
+            }
+        }
+
+        function sortProjects(column) {
+            const sortSelect = document.getElementById('sortBy');
+            if(sortSelect) {
+                if(column === 'title') {
+                    sortSelect.value = sortDirection === 'asc' ? 'title-desc' : 'title';
+                } else if(column === 'date') {
+                    sortSelect.value = sortDirection === 'asc' ? 'date-old' : 'date';
+                } else {
+                    sortSelect.value = column;
+                }
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                filterAndDisplayProjects();
+            }
+        }
+
+        function renderProjectsTable() {
+            const tbody = document.getElementById('projectsTableBody');
+            
+            if(filteredProjects.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-gray-500 py-8">No projects found. <button class="text-blue-600 hover:underline" onclick="openProjectModal()">Add one now</button></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filteredProjects.map((proj, displayIdx) => {
+                const actualIdx = allProjects.findIndex(p => p.id === proj.id);
+                const badge = `badge-${proj.category}`;
+                const statusBadge = proj.status || 'completed';
+                const thumbnail = proj.heroImage ? `<img src="${proj.heroImage}" alt="thumbnail" class="thumbnail">` : '<div style="width: 48px; height: 48px; background: #e5e7eb; border-radius: 0.375rem; display: flex; align-items: center; justify-content: center;"><i data-feather="image" style="width: 24px; height: 24px; color: #9ca3af;"></i></div>';
+                
+                return `
+                    <tr class="project-row" draggable="true" data-project-id="${proj.id}" data-index="${actualIdx}" ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="drop(event)" ondragleave="dragLeave(event)">
+                        <td><span class="drag-handle" title="Drag to reorder">⋮⋮</span></td>
+                        <td>${thumbnail}</td>
+                        <td><strong>${proj.title}</strong></td>
+                        <td><span class="badge ${badge}">${proj.category}</span></td>
+                        <td>${proj.date || 'N/A'}</td>
+                        <td><span class="badge-status ${statusBadge}">${statusBadge}</span></td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="btn btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;" onclick="editProject(${actualIdx})" title="Edit project">Edit</button>
+                                <button class="btn btn-danger" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;" onclick="deleteProject(${actualIdx})" title="Delete project">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Re-initialize Feather icons for the newly rendered rows
+            feather.replace();
+        }
+
+        // Drag and Drop Functions
+        let draggedElement = null;
+
+        function dragStart(e) {
+            draggedElement = e.target.closest('.project-row');
+            draggedElement.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const afterElement = getDragAfterElement(e.clientY);
+            const tbody = document.getElementById('projectsTableBody');
+            
+            if(afterElement == null) {
+                tbody.appendChild(draggedElement);
+            } else {
+                tbody.insertBefore(draggedElement, afterElement);
+            }
+        }
+
+        function dragLeave(e) {
+            const row = e.target.closest('.project-row');
+            if(row) row.classList.remove('drag-over');
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            if(draggedElement) {
+                draggedElement.classList.remove('dragging');
+                saveProjectOrder();
+            }
+        }
+
+        function getDragAfterElement(y) {
+            const draggableElements = [...document.querySelectorAll('.project-row:not(.dragging)')];
+            
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                
+                if(offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function saveProjectOrder() {
+            const rows = document.querySelectorAll('.project-row');
+            const newOrder = [];
+            
+            rows.forEach(row => {
+                const projectId = row.getAttribute('data-project-id');
+                const proj = allProjects.find(p => p.id == projectId);
+                if(proj) newOrder.push(proj);
+            });
+
+            if(newOrder.length > 0) {
+                allProjects = newOrder;
+                localStorage.setItem('portfolioProjects', JSON.stringify(allProjects));
+                showMessage('Projects reordered successfully!', 'success');
+                renderProjects();
+            }
+        }
+
+        function filterProjectCategory(cat) {
+            // Update tab styles
+            document.querySelectorAll('.proj-cat-tab').forEach(t => {
+                const isCurrent = t.getAttribute('data-cat') === cat;
+                if(isCurrent) {
+                    t.classList.add('active');
+                    t.style.borderBottom = '2px solid var(--primary)';
+                    t.style.color = 'var(--primary)';
+                    t.style.fontWeight = '600';
+                } else {
+                    t.classList.remove('active');
+                    t.style.borderBottom = 'none';
+                    t.style.color = '#6b7280';
+                    t.style.fontWeight = '400';
+                }
+            });
+        }
+
+        function previewImage(event, previewId) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById(previewId);
+                preview.innerHTML = '<img src="' + e.target.result + '" style="max-width: 200px; border-radius: 0.375rem; margin-top: 0.5rem;">';
+                preview.dataset.imageData = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function previewGallery(event) {
+            const files = event.target.files;
+            const preview = document.getElementById('galleryPreview');
+            preview.innerHTML = '';
+            Array.from(files).slice(0, 4).forEach((file, idx) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cssText = 'max-width: 100%; border-radius: 0.375rem;';
+                    img.dataset.index = idx;
+                    img.dataset.imageData = e.target.result;
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function openProjectModal(editIdx = -1) {
+            currentEditIndex = editIdx;
+            
+            // Reset all fields
+            document.getElementById('projTitle').value = '';
+            document.getElementById('projCategory').value = '';
+            document.getElementById('projStatus').value = '';
+            document.getElementById('projDate').value = '';
+            document.getElementById('projDescription').value = '';
+            document.getElementById('projChallenge').value = '';
+            document.getElementById('projRole').value = '';
+            document.getElementById('projTools').value = '';
+            document.getElementById('projProcess').value = '';
+            document.getElementById('projResults').value = '';
+            document.getElementById('projHeroImg').value = '';
+            document.getElementById('projGalleryImg').value = '';
+            document.getElementById('projGithub').value = '';
+            document.getElementById('projDocLink').value = '';
+            document.getElementById('heroPreview').innerHTML = '';
+            document.getElementById('galleryPreview').innerHTML = '';
+
+            // If editing, load project data
+            if(editIdx >= 0) {
+                const projects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
+                const proj = projects[editIdx];
+                document.getElementById('projTitle').value = proj.title || '';
+                document.getElementById('projCategory').value = proj.category || '';
+                document.getElementById('projStatus').value = proj.status || '';
+                document.getElementById('projDate').value = proj.date || '';
+                document.getElementById('projDescription').value = proj.description || '';
+                document.getElementById('projChallenge').value = proj.challenge || '';
+                document.getElementById('projRole').value = proj.role || '';
+                document.getElementById('projTools').value = (proj.tools || []).join(', ');
+                document.getElementById('projProcess').value = proj.process || '';
+                document.getElementById('projResults').value = proj.results || '';
+                document.getElementById('projGithub').value = proj.github || '';
+                document.getElementById('projDocLink').value = proj.docLink || '';
+                
+                // Preview existing images
+                if(proj.heroImage) {
+                    document.getElementById('heroPreview').innerHTML = '<img src="' + proj.heroImage + '" style="max-width: 200px; border-radius: 0.375rem;">';
+                    document.getElementById('heroPreview').dataset.imageData = proj.heroImage;
+                }
+                if(proj.galleryImages && proj.galleryImages.length) {
+                    const gallery = document.getElementById('galleryPreview');
+                    proj.galleryImages.forEach((imgData, i) => {
+                        const img = document.createElement('img');
+                        img.src = imgData;
+                        img.style.cssText = 'max-width: 100%; border-radius: 0.375rem;';
+                        img.dataset.index = i;
+                        img.dataset.imageData = imgData;
+                        gallery.appendChild(img);
+                    });
+                }
+            }
+
+            switchFormTab('basic');
+            document.getElementById('projectModal').classList.remove('hidden');
+        }
+
+        function closeProjectModal() {
+            currentEditIndex = -1;
+            document.getElementById('projectModal').classList.add('hidden');
+        }
+
+        function editProject(idx) {
+            openProjectModal(idx);
+        }
+
+        function saveProject() {
+            const title = document.getElementById('projTitle').value.trim();
+            const category = document.getElementById('projCategory').value;
+            const description = document.getElementById('projDescription').value.trim();
+
+            if(!title || !category || !description) {
+                showMessage('Please fill in all required fields (Title, Category, Description)', 'error');
+                return;
+            }
+
+            const projectData = {
+                title: title,
+                category: category,
+                status: document.getElementById('projStatus').value || '',
+                date: document.getElementById('projDate').value.trim() || '',
+                description: description,
+                challenge: document.getElementById('projChallenge').value.trim() || '',
+                role: document.getElementById('projRole').value.trim() || '',
+                tools: document.getElementById('projTools').value.split(',').map(t => t.trim()).filter(Boolean),
+                process: document.getElementById('projProcess').value.trim() || '',
+                results: document.getElementById('projResults').value.trim() || '',
+                heroImage: document.getElementById('heroPreview').dataset.imageData || '',
+                galleryImages: Array.from(document.getElementById('galleryPreview').querySelectorAll('img')).map(img => img.dataset.imageData),
+                github: document.getElementById('projGithub').value.trim() || '',
+                docLink: document.getElementById('projDocLink').value.trim() || '',
+                id: currentEditIndex >= 0 ? undefined : Date.now(),
+                updatedAt: new Date().toISOString()
+            };
+
+            let projects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
+            
+            if(currentEditIndex >= 0) {
+                // Update existing
+                projects[currentEditIndex] = { ...projects[currentEditIndex], ...projectData };
+                showMessage('Project updated successfully!', 'success');
+            } else {
+                // Add new
+                projectData.createdAt = new Date().toISOString();
+                projects.push(projectData);
+                showMessage('Project saved successfully!', 'success');
+            }
+
+            localStorage.setItem('portfolioProjects', JSON.stringify(projects));
+            closeProjectModal();
+            renderProjects();
+            updateDashboardStats();
+        }
+
+        function deleteProject(idx) {
+            if(!confirm('Are you sure you want to delete this project?')) return;
+            const projects = JSON.parse(localStorage.getItem('portfolioProjects') || '[]');
+            projects.splice(idx, 1);
+            localStorage.setItem('portfolioProjects', JSON.stringify(projects));
+            renderProjects();
+            updateDashboardStats();
+            showMessage('Project deleted', 'success');
+        }
+
+        function exportData() {
+            const data = {
+                schemaVersion: 1,
+                bio: JSON.parse(localStorage.getItem('portfolioBio') || '{}'),
+                projects: JSON.parse(localStorage.getItem('portfolioProjects') || '[]'),
+                skills: JSON.parse(localStorage.getItem('portfolioSkills') || '[]'),
+                experience: JSON.parse(localStorage.getItem('portfolioExperience') || '[]'),
+                certifications: JSON.parse(localStorage.getItem('portfolioCertifications') || '[]'),
+                media: JSON.parse(localStorage.getItem('portfolioMedia') || '[]'),
+                settings: {
+                    portfolioPassword: localStorage.getItem('portfolioPassword') || ''
+                },
+                metadata: {
+                    exportedAt: new Date().toISOString(),
+                    exportedFrom: 'Portfolio Editor CMS'
+                }
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'portfolio-data.json';
+            a.click();
+            showMessage('Data exported successfully!', 'success');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+
+                    if(data.bio) localStorage.setItem('portfolioBio', JSON.stringify(data.bio));
+                    if(data.projects) localStorage.setItem('portfolioProjects', JSON.stringify(data.projects));
+                    if(data.skills) localStorage.setItem('portfolioSkills', JSON.stringify(data.skills));
+                    if(data.experience) localStorage.setItem('portfolioExperience', JSON.stringify(data.experience));
+                    if(data.certifications) localStorage.setItem('portfolioCertifications', JSON.stringify(data.certifications));
+                    if(data.media) localStorage.setItem('portfolioMedia', JSON.stringify(data.media));
+                    if(data.settings && typeof data.settings.portfolioPassword === 'string') {
+                        if(data.settings.portfolioPassword) {
+                            localStorage.setItem('portfolioPassword', data.settings.portfolioPassword);
+                        } else {
+                            localStorage.removeItem('portfolioPassword');
+                        }
+                    }
+
+                    // Refresh UI
+                    updateDashboardStats();
+                    if(typeof loadBioData === 'function') loadBioData();
+                    if(typeof renderProjects === 'function') renderProjects();
+                    if(typeof renderSkills === 'function') renderSkills();
+                    if(typeof renderExperience === 'function') renderExperience();
+                    if(typeof renderCertifications === 'function') renderCertifications();
+                    if(typeof loadMediaLibrary === 'function') loadMediaLibrary();
+
+                    showMessage('Data imported successfully!', 'success');
+                } catch(err) {
+                    showMessage('Invalid JSON file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            localStorage.clear();
+            showMessage('All data cleared', 'warning');
+            updateDashboardStats();
+        }
+
+        function saveSettings() {
+            const pwd = document.getElementById('portfolioPassword').value;
+            if(pwd) {
+                localStorage.setItem('portfolioPassword', pwd);
+                showMessage('Password set. Editor page is now protected.', 'success');
+            } else {
+                localStorage.removeItem('portfolioPassword');
+                showMessage('Password removed. Editor is now public.', 'warning');
+            }
+        }
+
+        // Certification Management Functions
+        let currentCertIndex = -1;
+
+        function openCertificationModal(editIdx = -1) {
+            currentCertIndex = editIdx;
+            
+            // Reset all fields
+            document.getElementById('certName').value = '';
+            document.getElementById('certOrganization').value = '';
+            document.getElementById('certIssueDate').value = '';
+            document.getElementById('certCredentialId').value = '';
+            document.getElementById('certVerificationLink').value = '';
+            document.getElementById('certBadge').value = '';
+            document.getElementById('certSkills').value = '';
+            document.getElementById('certBadgePreview').innerHTML = '';
+
+            // If editing, load certification data
+            if(editIdx >= 0) {
+                const certs = JSON.parse(localStorage.getItem('portfolioCertifications') || '[]');
+                const cert = certs[editIdx];
+                document.getElementById('certName').value = cert.name || '';
+                document.getElementById('certOrganization').value = cert.organization || '';
+                document.getElementById('certIssueDate').value = cert.issueDate || '';
+                document.getElementById('certCredentialId').value = cert.credentialId || '';
+                document.getElementById('certVerificationLink').value = cert.verificationLink || '';
+                document.getElementById('certSkills').value = (cert.skills || []).join(', ');
+                
+                // Preview existing badge
+                if(cert.badgeImage) {
+                    document.getElementById('certBadgePreview').innerHTML = '<img src="' + cert.badgeImage + '" style="max-width: 120px; border-radius: 0.375rem;">';
+                    document.getElementById('certBadgePreview').dataset.imageData = cert.badgeImage;
+                }
+            }
+
+            document.getElementById('certificationModal').classList.remove('hidden');
+        }
+
+        function closeCertificationModal() {
+            currentCertIndex = -1;
+            document.getElementById('certificationModal').classList.add('hidden');
+        }
+
+        function previewCertBadge(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById('certBadgePreview');
+                preview.innerHTML = '<img src="' + e.target.result + '" style="max-width: 120px; border-radius: 0.375rem;">';
+                preview.dataset.imageData = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveCertification() {
+            const name = document.getElementById('certName').value.trim();
+            const organization = document.getElementById('certOrganization').value.trim();
+            const issueDate = document.getElementById('certIssueDate').value.trim();
+
+            if(!name || !organization || !issueDate) {
+                showMessage('Please fill in all required fields (Name, Organization, Issue Date)', 'error');
+                return;
+            }
+
+            const certData = {
+                name: name,
+                organization: organization,
+                issueDate: issueDate,
+                credentialId: document.getElementById('certCredentialId').value.trim() || '',
+                verificationLink: document.getElementById('certVerificationLink').value.trim() || '',
+                skills: document.getElementById('certSkills').value.split(',').map(s => s.trim()).filter(Boolean),
+                badgeImage: document.getElementById('certBadgePreview').dataset.imageData || '',
+                id: currentCertIndex >= 0 ? undefined : Date.now(),
+                updatedAt: new Date().toISOString()
+            };
+
+            let certs = JSON.parse(localStorage.getItem('portfolioCertifications') || '[]');
+            
+            if(currentCertIndex >= 0) {
+                // Update existing
+                certs[currentCertIndex] = { ...certs[currentCertIndex], ...certData };
+                showMessage('Certification updated successfully!', 'success');
+            } else {
+                // Add new
+                certData.createdAt = new Date().toISOString();
+                certs.push(certData);
+                showMessage('Certification saved successfully!', 'success');
+            }
+
+            localStorage.setItem('portfolioCertifications', JSON.stringify(certs));
+            closeCertificationModal();
+            renderCertifications();
+        }
+
+        function renderCertifications() {
+            const certs = JSON.parse(localStorage.getItem('portfolioCertifications') || '[]');
+            const list = document.getElementById('certificationsList');
+            list.innerHTML = '';
+
+            if(certs.length === 0) {
+                list.innerHTML = '<p class="text-gray-500">No certifications yet. Click "Add Certification" to get started.</p>';
+                return;
+            }
+
+            certs.forEach((cert, idx) => {
+                list.innerHTML += `
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-2">
+                                    ${cert.badgeImage ? '<img src="' + cert.badgeImage + '" style="width: 40px; height: 40px; border-radius: 0.375rem;">' : ''}
+                                    <div>
+                                        <h4 class="font-semibold text-lg">${cert.name}</h4>
+                                        <p class="text-gray-600 text-sm">${cert.organization}</p>
+                                    </div>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-2">
+                                    <strong>Issued:</strong> ${cert.issueDate}
+                                    ${cert.credentialId ? ' • <strong>ID:</strong> ' + cert.credentialId : ''}
+                                    ${cert.skills.length ? ' • <strong>Skills:</strong> ' + cert.skills.join(', ') : ''}
+                                </div>
+                                ${cert.verificationLink ? '<div class="mt-2"><a href="' + cert.verificationLink + '" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline text-sm">Verify</a></div>' : ''}
+                            </div>
+                            <div class="flex gap-2 flex-shrink-0">
+                                <button class="btn btn-secondary" onclick="openCertificationModal(${idx})">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteCertification(${idx})">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteCertification(idx) {
+            if(!confirm('Are you sure you want to delete this certification?')) return;
+            const certs = JSON.parse(localStorage.getItem('portfolioCertifications') || '[]');
+            certs.splice(idx, 1);
+            localStorage.setItem('portfolioCertifications', JSON.stringify(certs));
+            renderCertifications();
+            showMessage('Certification deleted', 'success');
+        }
+
+        // Experience Management Functions
+        let currentExpIndex = -1;
+
+        function openExperienceModal(editIdx = -1) {
+            currentExpIndex = editIdx;
+            
+            // Reset all fields
+            document.getElementById('expCompany').value = '';
+            document.getElementById('expJobTitle').value = '';
+            document.getElementById('expIndustry').value = '';
+            document.getElementById('expType').value = 'full-time';
+            document.getElementById('expStartDate').value = '';
+            document.getElementById('expEndDate').value = '';
+            document.getElementById('expLogo').value = '';
+            document.getElementById('expResponsibilities').value = '';
+            document.getElementById('expTechnologies').value = '';
+            document.getElementById('expAchievements').value = '';
+            document.getElementById('expLogoPreview').innerHTML = '';
+
+            // If editing, load experience data
+            if(editIdx >= 0) {
+                const exps = JSON.parse(localStorage.getItem('portfolioExperience') || '[]');
+                const exp = exps[editIdx];
+                document.getElementById('expCompany').value = exp.company || '';
+                document.getElementById('expJobTitle').value = exp.jobTitle || '';
+                document.getElementById('expIndustry').value = exp.industry || '';
+                document.getElementById('expType').value = exp.type || 'full-time';
+                document.getElementById('expStartDate').value = exp.startDate || '';
+                document.getElementById('expEndDate').value = exp.endDate || '';
+                document.getElementById('expResponsibilities').value = (exp.responsibilities || []).join('\n');
+                document.getElementById('expTechnologies').value = (exp.technologies || []).join(', ');
+                document.getElementById('expAchievements').value = exp.achievements || '';
+                
+                // Preview existing logo
+                if(exp.companyLogo) {
+                    document.getElementById('expLogoPreview').innerHTML = '<img src="' + exp.companyLogo + '" style="max-width: 100px; border-radius: 0.375rem;">';
+                    document.getElementById('expLogoPreview').dataset.imageData = exp.companyLogo;
+                }
+            }
+
+            document.getElementById('experienceModal').classList.remove('hidden');
+        }
+
+        function closeExperienceModal() {
+            currentExpIndex = -1;
+            document.getElementById('experienceModal').classList.add('hidden');
+        }
+
+        function previewExpLogo(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById('expLogoPreview');
+                preview.innerHTML = '<img src="' + e.target.result + '" style="max-width: 100px; border-radius: 0.375rem;">';
+                preview.dataset.imageData = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveExperience() {
+            const company = document.getElementById('expCompany').value.trim();
+            const jobTitle = document.getElementById('expJobTitle').value.trim();
+            const industry = document.getElementById('expIndustry').value;
+            const startDate = document.getElementById('expStartDate').value.trim();
+
+            if(!company || !jobTitle || !industry || !startDate) {
+                showMessage('Please fill in all required fields (Company, Job Title, Industry, Start Date)', 'error');
+                return;
+            }
+
+            const expData = {
+                company: company,
+                jobTitle: jobTitle,
+                industry: industry,
+                type: document.getElementById('expType').value || 'full-time',
+                startDate: startDate,
+                endDate: document.getElementById('expEndDate').value.trim() || '',
+                responsibilities: document.getElementById('expResponsibilities').value.split('\n').map(r => r.trim()).filter(Boolean),
+                technologies: document.getElementById('expTechnologies').value.split(',').map(t => t.trim()).filter(Boolean),
+                achievements: document.getElementById('expAchievements').value.trim() || '',
+                companyLogo: document.getElementById('expLogoPreview').dataset.imageData || '',
+                id: currentExpIndex >= 0 ? undefined : Date.now(),
+                updatedAt: new Date().toISOString()
+            };
+
+            let exps = JSON.parse(localStorage.getItem('portfolioExperience') || '[]');
+            
+            if(currentExpIndex >= 0) {
+                // Update existing
+                exps[currentExpIndex] = { ...exps[currentExpIndex], ...expData };
+                showMessage('Experience updated successfully!', 'success');
+            } else {
+                // Add new
+                expData.createdAt = new Date().toISOString();
+                exps.push(expData);
+                showMessage('Experience saved successfully!', 'success');
+            }
+
+            localStorage.setItem('portfolioExperience', JSON.stringify(exps));
+            closeExperienceModal();
+            renderExperience();
+        }
+
+        function renderExperience() {
+            const exps = JSON.parse(localStorage.getItem('portfolioExperience') || '[]');
+            const list = document.getElementById('experienceList');
+            list.innerHTML = '';
+
+            if(exps.length === 0) {
+                list.innerHTML = '<p class="text-gray-500">No experience entries yet. Click "Add Experience" to get started.</p>';
+                return;
+            }
+
+            exps.forEach((exp, idx) => {
+                const duration = exp.endDate && exp.endDate !== 'Present' ? 
+                    exp.startDate + ' - ' + exp.endDate : 
+                    exp.startDate + ' - ' + (exp.endDate || 'Present');
+                
+                list.innerHTML += `
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-2">
+                                    ${exp.companyLogo ? '<img src="' + exp.companyLogo + '" style="width: 40px; height: 40px; border-radius: 0.375rem; object-fit: contain;">' : ''}
+                                    <div>
+                                        <h4 class="font-semibold text-lg">${exp.jobTitle}</h4>
+                                        <p class="text-gray-600 text-sm">${exp.company}</p>
+                                    </div>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-2">
+                                    <strong>Period:</strong> ${duration} • <strong>Industry:</strong> ${exp.industry}
+                                    ${exp.responsibilities.length ? ' • <strong>Responsibilities:</strong> ' + exp.responsibilities.slice(0, 1).join(', ') + '...' : ''}
+                                </div>
+                                ${exp.technologies.length ? '<div class="text-sm text-gray-700 mt-2"><strong>Technologies:</strong> ' + exp.technologies.join(', ') + '</div>' : ''}
+                                ${exp.achievements ? '<div class="text-sm text-gray-700 mt-2"><strong>Achievements:</strong> ' + exp.achievements.substring(0, 80) + '...</div>' : ''}
+                            </div>
+                            <div class="flex gap-2 flex-shrink-0">
+                                <button class="btn btn-secondary" onclick="openExperienceModal(${idx})">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteExperience(${idx})">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteExperience(idx) {
+            if(!confirm('Are you sure you want to delete this experience entry?')) return;
+            const exps = JSON.parse(localStorage.getItem('portfolioExperience') || '[]');
+            exps.splice(idx, 1);
+            localStorage.setItem('portfolioExperience', JSON.stringify(exps));
+            renderExperience();
+            showMessage('Experience deleted', 'success');
+        }
+
+        // Skills Management Functions
+        let currentSkillIndex = -1;
+
+        function openSkillModal(editIdx = -1) {
+            currentSkillIndex = editIdx;
+            
+            // Reset all fields
+            document.getElementById('skillName').value = '';
+            document.getElementById('skillCategory').value = '';
+            document.getElementById('skillProficiency').value = '50';
+            document.getElementById('skillIcon').value = '';
+            document.getElementById('proficiencyValue').textContent = '50%';
+            updateProficiencyButtons(50);
+
+            // If editing, load skill data
+            if(editIdx >= 0) {
+                const skills = JSON.parse(localStorage.getItem('portfolioSkills') || '[]');
+                const skill = skills[editIdx];
+                document.getElementById('skillName').value = skill.name || '';
+                document.getElementById('skillCategory').value = skill.category || '';
+                document.getElementById('skillProficiency').value = skill.proficiency || 50;
+                document.getElementById('skillIcon').value = skill.icon || '';
+                document.getElementById('proficiencyValue').textContent = skill.proficiency + '%';
+                updateProficiencyButtons(skill.proficiency);
+            }
+
+            document.getElementById('skillModal').classList.remove('hidden');
+        }
+
+        function closeSkillModal() {
+            currentSkillIndex = -1;
+            document.getElementById('skillModal').classList.add('hidden');
+        }
+
+        function setSkillLevel(level) {
+            document.getElementById('skillProficiency').value = level;
+            document.getElementById('proficiencyValue').textContent = level + '%';
+            updateProficiencyButtons(level);
+        }
+
+        function updateProficiencyButtons(level) {
+            document.querySelectorAll('.prof-level-btn').forEach(btn => {
+                const btnLevel = parseInt(btn.getAttribute('data-level'));
+                if(btnLevel === level) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.getElementById('skillProficiency')?.addEventListener('input', (e) => {
+            document.getElementById('proficiencyValue').textContent = e.target.value + '%';
+            updateProficiencyButtons(parseInt(e.target.value));
+        });
+
+        function saveSkill() {
+            const name = document.getElementById('skillName').value.trim();
+            const category = document.getElementById('skillCategory').value;
+            const proficiency = parseInt(document.getElementById('skillProficiency').value);
+
+            if(!name || !category) {
+                showMessage('Please fill in all required fields (Name, Category)', 'error');
+                return;
+            }
+
+            const skillData = {
+                name: name,
+                category: category,
+                proficiency: proficiency,
+                icon: document.getElementById('skillIcon').value.trim() || '💡',
+                id: currentSkillIndex >= 0 ? undefined : Date.now(),
+                updatedAt: new Date().toISOString()
+            };
+
+            let skills = JSON.parse(localStorage.getItem('portfolioSkills') || '[]');
+            
+            if(currentSkillIndex >= 0) {
+                // Update existing
+                skills[currentSkillIndex] = { ...skills[currentSkillIndex], ...skillData };
+                showMessage('Skill updated successfully!', 'success');
+            } else {
+                // Add new
+                skillData.createdAt = new Date().toISOString();
+                skills.push(skillData);
+                showMessage('Skill saved successfully!', 'success');
+            }
+
+            localStorage.setItem('portfolioSkills', JSON.stringify(skills));
+            closeSkillModal();
+            renderSkills();
+        }
+
+        function renderSkills() {
+            const skills = JSON.parse(localStorage.getItem('portfolioSkills') || '[]');
+            const container = document.getElementById('skillsByCategory');
+            container.innerHTML = '';
+
+            if(skills.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No skills yet. Click "Add Skill" to get started.</p>';
+                return;
+            }
+
+            // Group skills by category
+            const categories = {
+                'mechanical-software': 'Mechanical Engineering Software',
+                'maintenance-ops': 'Maintenance & Operations',
+                'programming': 'Programming & Data Analysis',
+                'other': 'General / Other'
+            };
+
+            const grouped = {};
+            skills.forEach(skill => {
+                if(!grouped[skill.category]) grouped[skill.category] = [];
+                grouped[skill.category].push(skill);
+            });
+
+            // Render each category
+            Object.keys(categories).forEach(catKey => {
+                if(!grouped[catKey] || grouped[catKey].length === 0) return;
+
+                const catDiv = document.createElement('div');
+                catDiv.className = 'skill-category';
+                catDiv.draggable = true;
+                catDiv.setAttribute('data-category', catKey);
+
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'skill-category-title';
+                titleDiv.innerHTML = `
+                    <span>${categories[catKey]}</span>
+                    <span class="skill-count">${grouped[catKey].length} skill${grouped[catKey].length !== 1 ? 's' : ''}</span>
+                `;
+                catDiv.appendChild(titleDiv);
+
+                grouped[catKey].forEach((skill, idx) => {
+                    const actualIdx = skills.findIndex(s => s.id === skill.id);
+                    const skillDiv = document.createElement('div');
+                    skillDiv.className = 'skill-item';
+                    skillDiv.draggable = true;
+                    skillDiv.setAttribute('data-skill-id', skill.id);
+                    skillDiv.setAttribute('data-index', actualIdx);
+                    skillDiv.ondragstart = dragSkillStart;
+                    skillDiv.ondragover = dragSkillOver;
+                    skillDiv.ondrop = dropSkill;
+                    skillDiv.ondragleave = dragSkillLeave;
+
+                    const profColor = skill.proficiency >= 80 ? '#10b981' : skill.proficiency >= 60 ? '#f59e0b' : '#ef4444';
+
+                    skillDiv.innerHTML = `
+                        <div class="skill-left">
+                            <span class="skill-drag-handle" title="Drag to reorder">⋮⋮</span>
+                            <div class="skill-icon">${skill.icon}</div>
+                            <div class="skill-info">
+                                <div class="skill-name">${skill.name}</div>
+                                <div class="skill-proficiency-display">${skill.proficiency}%</div>
+                                <div class="skill-proficiency-bar">
+                                    <div class="skill-proficiency-fill" style="width: ${skill.proficiency}%; background: linear-gradient(90deg, ${profColor}, #0b3b73);"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="skill-actions">
+                            <button class="btn btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;" onclick="openSkillModal(${actualIdx})" title="Edit skill">Edit</button>
+                            <button class="btn btn-danger" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;" onclick="deleteSkill(${actualIdx})" title="Delete skill">Delete</button>
+                        </div>
+                    `;
+
+                    catDiv.appendChild(skillDiv);
+                });
+
+                container.appendChild(catDiv);
+            });
+        }
+
+        function deleteSkill(idx) {
+            if(!confirm('Are you sure you want to delete this skill?')) return;
+            const skills = JSON.parse(localStorage.getItem('portfolioSkills') || '[]');
+            skills.splice(idx, 1);
+            localStorage.setItem('portfolioSkills', JSON.stringify(skills));
+            renderSkills();
+            showMessage('Skill deleted', 'success');
+        }
+
+        // Skill Drag and Drop
+        let draggedSkill = null;
+
+        function dragSkillStart(e) {
+            draggedSkill = e.target.closest('.skill-item');
+            draggedSkill.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function dragSkillOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const afterElement = getDragAfterElementSkill(e.clientY);
+            const container = e.target.closest('.skill-category');
+            
+            if(afterElement == null && container) {
+                container.appendChild(draggedSkill);
+            } else if(afterElement && container) {
+                container.insertBefore(draggedSkill, afterElement);
+            }
+        }
+
+        function dragSkillLeave(e) {
+            const item = e.target.closest('.skill-item');
+            if(item) item.classList.remove('drag-over');
+        }
+
+        function dropSkill(e) {
+            e.preventDefault();
+            if(draggedSkill) {
+                draggedSkill.classList.remove('dragging');
+                saveSkillOrder();
+            }
+        }
+
+        function getDragAfterElementSkill(y) {
+            const draggableElements = [...document.querySelectorAll('.skill-item:not(.dragging)')];
+            
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                
+                if(offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function saveSkillOrder() {
+            const skillItems = document.querySelectorAll('.skill-item');
+            const newOrder = [];
+            const allSkills = JSON.parse(localStorage.getItem('portfolioSkills') || '[]');
+            
+            skillItems.forEach(item => {
+                const skillId = item.getAttribute('data-skill-id');
+                const skill = allSkills.find(s => s.id == skillId);
+                if(skill) newOrder.push(skill);
+            });
+
+            if(newOrder.length > 0) {
+                localStorage.setItem('portfolioSkills', JSON.stringify(newOrder));
+                showMessage('Skills reordered successfully!', 'success');
+                renderSkills();
+            }
+        }
+
+        function showMessage(text, type) {
+            const box = document.getElementById('messageBox');
+            const msg = document.createElement('div');
+            msg.className = `message ${type}`;
+            msg.textContent = text;
+            box.appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+        }
+
+        // Media Library Management Functions
+        let allMediaItems = [];
+        let currentMediaIndex = -1;
+
+        function loadMediaLibrary() {
+            allMediaItems = JSON.parse(localStorage.getItem('portfolioMedia') || '[]');
+            renderMediaGallery();
+        }
+
+        function allowMediaDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('mediaUploadArea').classList.add('drag-over');
+        }
+
+        function disallowMediaDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('mediaUploadArea').classList.remove('drag-over');
+        }
+
+        function handleMediaDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('mediaUploadArea').classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            handleMediaFiles(files);
+        }
+
+        function handleMediaFileInput(e) {
+            const files = e.target.files;
+            handleMediaFiles(files);
+        }
+
+        function handleMediaFiles(files) {
+            Array.from(files).forEach((file, idx) => {
+                if(!file.type.startsWith('image/')) {
+                    showMessage(`${file.name} is not an image file`, 'error');
+                    return;
+                }
+
+                if(file.size > 5 * 1024 * 1024) {
+                    showMessage(`${file.name} exceeds 5MB limit`, 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const mediaItem = {
+                            id: Date.now() + Math.random(),
+                            filename: file.name,
+                            data: e.target.result,
+                            size: file.size,
+                            type: file.type,
+                            width: img.width,
+                            height: img.height,
+                            uploadedAt: new Date().toISOString()
+                        };
+
+                        allMediaItems.push(mediaItem);
+                        localStorage.setItem('portfolioMedia', JSON.stringify(allMediaItems));
+                        showMessage(`${file.name} uploaded successfully!`, 'success');
+                        renderMediaGallery();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Reset file input
+            document.getElementById('mediaFileInput').value = '';
+        }
+
+        function renderMediaGallery() {
+            const gallery = document.getElementById('mediaGallery');
+            const empty = document.getElementById('mediaEmpty');
+            const searchTerm = document.getElementById('mediaSearch').value.toLowerCase();
+            const sortBy = document.getElementById('mediaSort').value;
+
+            // Filter items
+            let filteredItems = allMediaItems.filter(item => 
+                item.filename.toLowerCase().includes(searchTerm)
+            );
+
+            // Sort items
+            filteredItems.sort((a, b) => {
+                switch(sortBy) {
+                    case 'date-asc':
+                        return new Date(a.uploadedAt) - new Date(b.uploadedAt);
+                    case 'date-desc':
+                        return new Date(b.uploadedAt) - new Date(a.uploadedAt);
+                    case 'name-asc':
+                        return a.filename.localeCompare(b.filename);
+                    case 'name-desc':
+                        return b.filename.localeCompare(a.filename);
+                    case 'size-asc':
+                        return a.size - b.size;
+                    case 'size-desc':
+                        return b.size - a.size;
+                    default:
+                        return 0;
+                }
+            });
+
+            gallery.innerHTML = '';
+            if(filteredItems.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+            empty.style.display = 'none';
+
+            filteredItems.forEach((item) => {
+                const actualIdx = allMediaItems.findIndex(m => m.id === item.id);
+                const card = document.createElement('div');
+                card.className = 'media-card';
+                card.onclick = () => openMediaModal(actualIdx);
+
+                const sizeKB = (item.size / 1024).toFixed(1);
+                
+                card.innerHTML = `
+                    <div style="position: relative;">
+                        <img src="${item.data}" alt="${item.filename}" class="media-card-image">
+                        <div class="media-card-actions">
+                            <button class="media-action-btn" onclick="event.stopPropagation(); copyMediaPath('${actualIdx}')" title="Copy URL">
+                                <i data-feather="copy" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="media-action-btn danger" onclick="event.stopPropagation(); if(confirm('Delete this image?')) deleteMediaItem(${actualIdx})" title="Delete">
+                                <i data-feather="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="media-card-info">
+                        <div class="media-filename" title="${item.filename}">${item.filename}</div>
+                        <div class="media-details">${sizeKB} KB</div>
+                        <div class="media-details">${item.width}×${item.height}px</div>
+                    </div>
+                `;
+                gallery.appendChild(card);
+            });
+
+            feather.replace();
+        }
+
+        function filterMediaGallery() {
+            renderMediaGallery();
+        }
+
+        function openMediaModal(idx) {
+            currentMediaIndex = idx;
+            const item = allMediaItems[idx];
+            
+            document.getElementById('mediaPreviewImage').src = item.data;
+            document.getElementById('mediaFilename').textContent = item.filename;
+            document.getElementById('mediaFileSize').textContent = (item.size / 1024).toFixed(1) + ' KB';
+            document.getElementById('mediaDimensions').textContent = item.width + ' × ' + item.height + ' px';
+            document.getElementById('mediaFormat').textContent = item.type.split('/')[1].toUpperCase();
+            document.getElementById('mediaUploadDate').textContent = new Date(item.uploadedAt).toLocaleDateString();
+            document.getElementById('mediaUrlInput').value = item.data.substring(0, 50) + '...';
+            
+            document.getElementById('mediaModal').classList.remove('hidden');
+        }
+
+        function closeMediaModal() {
+            document.getElementById('mediaModal').classList.add('hidden');
+            currentMediaIndex = -1;
+        }
+
+        function copyMediaUrl() {
+            const url = allMediaItems[currentMediaIndex].data;
+            navigator.clipboard.writeText(url).then(() => {
+                showMessage('Image URL copied to clipboard!', 'success');
+            }).catch(() => {
+                showMessage('Failed to copy URL', 'error');
+            });
+        }
+
+        function copyMediaPath(idx) {
+            const url = allMediaItems[idx].data;
+            navigator.clipboard.writeText(url).then(() => {
+                showMessage('Image URL copied!', 'success');
+            }).catch(() => {
+                showMessage('Failed to copy URL', 'error');
+            });
+        }
+
+        function deleteMediaItem(idx) {
+            allMediaItems.splice(idx, 1);
+            localStorage.setItem('portfolioMedia', JSON.stringify(allMediaItems));
+            renderMediaGallery();
+            showMessage('Image deleted', 'success');
+        }
+
+        function deleteCurrentMedia() {
+            if(currentMediaIndex >= 0) {
+                deleteMediaItem(currentMediaIndex);
+                closeMediaModal();
+            }
+        }
+
+        function optimizeSelectedImages() {
+            showMessage('Select images to optimize by clicking on them first', 'info');
+            // Advanced optimization feature - for now just a placeholder
+        }
+
+        function optimizeMediaImage(quality) {
+            const item = allMediaItems[currentMediaIndex];
+            const canvas = document.createElement('canvas');
+            const img = new Image();
+
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                canvas.toBlob((blob) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const optimized = {
+                            ...item,
+                            data: e.target.result,
+                            size: blob.size,
+                            uploadedAt: new Date().toISOString()
+                        };
+                        allMediaItems[currentMediaIndex] = optimized;
+                        localStorage.setItem('portfolioMedia', JSON.stringify(allMediaItems));
+                        renderMediaGallery();
+                        openMediaModal(currentMediaIndex);
+                        showMessage('Image compressed to ' + (blob.size / 1024).toFixed(1) + ' KB', 'success');
+                    };
+                    reader.readAsDataURL(blob);
+                }, 'image/jpeg', quality / 100);
+            };
+            img.src = item.data;
+        }
+
+        // Bio/About Management Functions
+        function loadBioData() {
+            const bioData = JSON.parse(localStorage.getItem('portfolioBio') || '{}');
+            
+            document.getElementById('bioHeadline').value = bioData.headline || '';
+            document.getElementById('bioShort').value = bioData.short || '';
+            document.getElementById('bioFull').value = bioData.full || '';
+            document.getElementById('bioEmail').value = bioData.email || '';
+            document.getElementById('bioPhone').value = bioData.phone || '';
+            document.getElementById('bioLocation').value = bioData.location || '';
+            document.getElementById('bioLinkedIn').value = bioData.linkedin || '';
+            document.getElementById('bioGitHub').value = bioData.github || '';
+
+            if(bioData.photo) {
+                document.getElementById('bioPhotoPreview').innerHTML = '<img src="' + bioData.photo + '" alt="Profile photo">';
+            }
+
+            if(bioData.resumeName) {
+                document.getElementById('bioResumeFile').textContent = '✓ ' + bioData.resumeName + ' (' + (bioData.resumeSize / 1024).toFixed(1) + ' KB)';
+            }
+        }
+
+        function previewBioPhoto(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('bioPhotoPreview').innerHTML = '<img src="' + e.target.result + '" alt="Profile photo preview">';
+                document.getElementById('bioPhotoPreview').dataset.imageData = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearBioPhoto() {
+            const preview = document.getElementById('bioPhotoPreview');
+            const input = document.getElementById('bioPhoto');
+            if(preview) {
+                preview.innerHTML = '';
+                delete preview.dataset.imageData;
+            }
+            if(input) {
+                input.value = '';
+            }
+
+            const bioData = JSON.parse(localStorage.getItem('portfolioBio') || '{}');
+            if(bioData.photo) {
+                bioData.photo = '';
+                bioData.updatedAt = new Date().toISOString();
+                localStorage.setItem('portfolioBio', JSON.stringify(bioData));
+            }
+
+            showMessage('Profile photo removed', 'success');
+        }
+
+        function saveBioData() {
+            const headline = document.getElementById('bioHeadline').value.trim();
+            const email = document.getElementById('bioEmail').value.trim();
+
+            if(!headline || !email) {
+                showMessage('Please fill in required fields (Headline, Email)', 'error');
+                return;
+            }
+
+            let resumeData = null;
+            let resumeName = '';
+            let resumeSize = 0;
+
+            const resumeFile = document.getElementById('bioResume').files[0];
+            if(resumeFile) {
+                if(resumeFile.type !== 'application/pdf') {
+                    showMessage('Resume must be a PDF file', 'error');
+                    return;
+                }
+                if(resumeFile.size > 10 * 1024 * 1024) {
+                    showMessage('Resume file exceeds 10MB limit', 'error');
+                    return;
+                }
+                resumeName = resumeFile.name;
+                resumeSize = resumeFile.size;
+            }
+
+            const bioData = {
+                headline: headline,
+                short: document.getElementById('bioShort').value.trim(),
+                full: document.getElementById('bioFull').value.trim(),
+                email: email,
+                phone: document.getElementById('bioPhone').value.trim(),
+                location: document.getElementById('bioLocation').value.trim(),
+                linkedin: document.getElementById('bioLinkedIn').value.trim(),
+                github: document.getElementById('bioGitHub').value.trim(),
+                photo: document.getElementById('bioPhotoPreview').dataset.imageData || '',
+                resumeName: resumeName,
+                resumeSize: resumeSize,
+                resumeData: resumeData,
+                updatedAt: new Date().toISOString()
+            };
+
+            // Handle resume file if selected
+            if(resumeFile) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    bioData.resumeData = e.target.result;
+                    localStorage.setItem('portfolioBio', JSON.stringify(bioData));
+                    showMessage('Bio/About information saved successfully!', 'success');
+                };
+                reader.readAsDataURL(resumeFile);
+            } else {
+                localStorage.setItem('portfolioBio', JSON.stringify(bioData));
+                showMessage('Bio/About information saved successfully!', 'success');
+            }
+        }
+
+        function resetBioForm() {
+            if(confirm('Reset form to last saved state?')) {
+                loadBioData();
+            }
+        }
+
+        // Load settings on page load
+        window.addEventListener('load', () => {
+            const pwd = localStorage.getItem('portfolioPassword');
+            if(pwd) {
+                document.getElementById('portfolioPassword').value = pwd;
+            }
+            updateDashboardStats();
+            loadBioData();
+            loadMediaLibrary();
+        });
+    </script>
+</body>
+</html>
