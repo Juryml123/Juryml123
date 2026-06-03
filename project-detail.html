@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Detail — Jhoremil Cabrillos</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="page">
+
+  <!-- ── Navigation ─────────────────────────────────────── -->
+  <nav class="nav" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo">JCC<span>.</span></a>
+    <ul class="nav-links" role="list">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="mechanical.html">Mechanical</a></li>
+      <li><a href="software.html">Software</a></li>
+      <li><a href="academic.html">Academic</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ── Detail Content ─────────────────────────────────── -->
+  <div style="padding-top: var(--nav-h);">
+    <div class="section-inner" style="padding-top: 60px; padding-bottom: 100px;">
+
+      <!-- Back link -->
+      <a href="javascript:history.back()" class="back-link" id="backLink">
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 8H3M7 4l-4 4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back
+      </a>
+
+      <!-- Dynamic content injected here -->
+      <div id="projectContent">
+        <div style="text-align:center; padding: 80px 0; color: var(--text-muted);">
+          Loading project…
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Footer ─────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-name">Jhoremil C. Cabrillos</div>
+      <div class="footer-role">Mechanical Engineer · Software Learner · Cebu, Philippines</div>
+      <nav class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="mechanical.html">Mechanical</a>
+        <a href="software.html">Software</a>
+        <a href="academic.html">Academic</a>
+      </nav>
+      <p class="footer-copy">© 2025 Jhoremil C. Cabrillos. Built with HTML, CSS &amp; JavaScript.</p>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+  <script src="js/projects.js"></script>
+</body>
+</html>

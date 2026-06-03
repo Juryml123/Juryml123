@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Software Projects — Jhoremil Cabrillos</title>
+  <meta name="description" content="Software and programming projects by Jhoremil C. Cabrillos — Java, Python, Flask, REST APIs, and more." />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="page">
+
+  <!-- ── Navigation ─────────────────────────────────────── -->
+  <nav class="nav" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo">JCC<span>.</span></a>
+    <ul class="nav-links" role="list">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="mechanical.html">Mechanical</a></li>
+      <li><a href="software.html">Software</a></li>
+      <li><a href="academic.html">Academic</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ── Page Header ────────────────────────────────────── -->
+  <header class="page-header">
+    <div class="section-inner page-header-inner">
+      <p class="section-label">Software &amp; Programming</p>
+      <h1 class="section-title">Code Projects &amp; Development</h1>
+      <p class="section-desc">
+        Self-taught software development work — from backend microservices in Java Spring Boot
+        to data analysis tools in Python. Built out of curiosity and discipline.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <div class="section-inner">
+
+      <!-- Filter bar -->
+      <div class="filter-bar" role="group" aria-label="Filter projects">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="java">Java</button>
+        <button class="filter-btn" data-filter="python">Python</button>
+        <button class="filter-btn" data-filter="web">Web</button>
+      </div>
+
+      <div class="cards-grid">
+
+        <!-- ── Project 1: Bank Ledger Microservice ── -->
+        <article class="project-card" data-category="java">
+          <div class="card-img">
+            <div class="card-img-placeholder">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="16" width="48" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                <path d="M8 26h48" stroke="currentColor" stroke-width="2"/>
+                <rect x="16" y="34" width="12" height="8" rx="2" stroke="currentColor" stroke-width="2"/>
+                <rect x="36" y="34" width="12" height="8" rx="2" stroke="currentColor" stroke-width="2"/>
+                <path d="M28 10h8M30 10v6M34 10v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="card-badge badge-soft">Java · Spring Boot</span>
+          </div>
+          <div class="card-body">
+            <h2 class="card-title">Bank Ledger Microservice</h2>
+            <p class="card-desc">
+              RESTful microservice for time deposit (TD) account management. Handles TD account
+              creation, deposit transactions, maturity calculations, and integrates with pricing
+              and product mapping APIs.
+            </p>
+            <div class="card-tags">
+              <span class="card-tag">Java</span>
+              <span class="card-tag">Spring Boot</span>
+              <span class="card-tag">Maven</span>
+              <span class="card-tag">REST API</span>
+              <span class="card-tag">Microservices</span>
+            </div>
+            <div class="card-footer">
+              <a href="project-detail.html?id=bank-ledger-microservice" class="card-link">
+                View Project
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── Project 2: TD Microservice Debugging ── -->
+        <article class="project-card" data-category="java">
+          <div class="card-img">
+            <div class="card-img-placeholder">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 12h24M16 20h32M20 28h24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="32" cy="44" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M29 41l6 6M35 41l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="card-badge badge-soft">Debugging · Assessment</span>
+          </div>
+          <div class="card-body">
+            <h2 class="card-title">Open TD Microservice — Debugging Assessment</h2>
+            <p class="card-desc">
+              Backend assessment task involving debugging a Java Spring Boot microservice
+              for opening time deposit accounts. Identified and resolved bugs across controller,
+              service, and repository layers.
+            </p>
+            <div class="card-tags">
+              <span class="card-tag">Java</span>
+              <span class="card-tag">Spring Boot</span>
+              <span class="card-tag">Debugging</span>
+              <span class="card-tag">Backend</span>
+            </div>
+            <div class="card-footer">
+              <a href="project-detail.html?id=open-td-debugging" class="card-link">
+                View Project
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── Project 3: Python Data Analysis ── -->
+        <article class="project-card" data-category="python">
+          <div class="card-img">
+            <div class="card-img-placeholder">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 52L22 32l10 12L42 20l14 32" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 52h48" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M8 8v44" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="card-badge badge-soft">Python · Data</span>
+          </div>
+          <div class="card-body">
+            <h2 class="card-title">Python Data Analysis Projects</h2>
+            <p class="card-desc">
+              Collection of data analysis and visualization projects completed through IBM
+              certifications. Covers data cleaning, statistical analysis, and visualization
+              using pandas, numpy, and matplotlib.
+            </p>
+            <div class="card-tags">
+              <span class="card-tag">Python</span>
+              <span class="card-tag">Pandas</span>
+              <span class="card-tag">NumPy</span>
+              <span class="card-tag">Matplotlib</span>
+              <span class="card-tag">IBM</span>
+            </div>
+            <div class="card-footer">
+              <a href="project-detail.html?id=python-data-analysis" class="card-link">
+                View Project
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- ── Project 4: Flask Web App ── -->
+        <article class="project-card" data-category="python web">
+          <div class="card-img">
+            <div class="card-img-placeholder">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="12" width="48" height="40" rx="4" stroke="currentColor" stroke-width="2"/>
+                <path d="M8 22h48" stroke="currentColor" stroke-width="2"/>
+                <circle cx="16" cy="17" r="2" fill="currentColor" opacity="0.4"/>
+                <circle cx="24" cy="17" r="2" fill="currentColor" opacity="0.4"/>
+                <circle cx="32" cy="17" r="2" fill="currentColor" opacity="0.4"/>
+                <path d="M18 34h10M18 42h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="card-badge badge-soft">Python · Flask</span>
+          </div>
+          <div class="card-body">
+            <h2 class="card-title">Flask Web Application</h2>
+            <p class="card-desc">
+              Python web application development using Flask framework. Built as part of
+              Codecademy's "Build Python Web Apps with Flask" course — covers routing,
+              templates, forms, and basic database interactions.
+            </p>
+            <div class="card-tags">
+              <span class="card-tag">Python</span>
+              <span class="card-tag">Flask</span>
+              <span class="card-tag">HTML/CSS</span>
+              <span class="card-tag">Jinja2</span>
+            </div>
+            <div class="card-footer">
+              <a href="project-detail.html?id=flask-web-app" class="card-link">
+                View Project
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!--
+          ════════════════════════════════════════
+          ADD NEW SOFTWARE PROJECTS BELOW HERE
+          Copy the <article> block above, change
+          the data-category, id, title, desc, tags.
+          ════════════════════════════════════════
+        -->
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-name">Jhoremil C. Cabrillos</div>
+      <div class="footer-role">Mechanical Engineer · Software Learner · Cebu, Philippines</div>
+      <nav class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="mechanical.html">Mechanical</a>
+        <a href="software.html">Software</a>
+        <a href="academic.html">Academic</a>
+      </nav>
+      <p class="footer-copy">© 2025 Jhoremil C. Cabrillos. Built with HTML, CSS &amp; JavaScript.</p>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
