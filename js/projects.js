@@ -48,10 +48,7 @@ const PROJECTS = [
       'Status': 'Completed',
     },
     images: [
-      /* Add image paths here when ready, e.g.:
-         'assets/images/pulley-1.jpg',
-         'assets/images/pulley-2.jpg',
-      */
+      'assets/images/ccc/pulleycover.png',
     ],
     files: [
       /* { label: 'View Pulley Database', href: 'assets/project-files/pulley_data.json' } */
