@@ -406,7 +406,7 @@ const PROJECTS = [
     ],
     files: [
       { label: 'Download Completion Report (PDF)', href: 'assets/project-files/4bees/4B.pdf' },
-      { label: 'Organization/Management Information (PDF)', href: 'assets/project-files/4bees/org.pdf' },
+      { label: 'Organization/Management Information (PDF)', href: 'assets/project-files/4bees/Org.pdf' },
     ],
   },
 
