@@ -1,4 +1,4 @@
-# Jhoremil C. Cabrillos — Portfolio
+#  Portfolio
 
 A clean, minimal, and fully maintainable portfolio website built with **vanilla HTML, CSS, and JavaScript** — no frameworks, no build tools, no dependencies.
 
