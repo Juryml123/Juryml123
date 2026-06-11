@@ -89,8 +89,13 @@ const PROJECTS = [
       'Type': 'Technical Documentation',
       'Status': 'Completed',
     },
-    images: [],
-    files: [],
+    images: [
+      'assets/images/shotblast/shotblast.png',
+      'assets/images/shotblast/shotblast_1.png',
+    ],
+    files: [
+      {label: 'Download Dismantling Procedure (PDF)', href: 'assets/project-files/shotblast_dismantling.pdf' }
+    ],
   },
 
   {
