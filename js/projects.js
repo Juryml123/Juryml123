@@ -90,6 +90,7 @@ const PROJECTS = [
       'Status': 'Completed',
     },
     images: [
+      'assets/images/shotblast/shotblastcover.png',
       'assets/images/shotblast/shotblast.png',
       'assets/images/shotblast/shotblast_1.png',
     ],
@@ -130,7 +131,9 @@ const PROJECTS = [
       'Type': 'Maintenance / Safety',
       'Status': 'Completed',
     },
-    images: [],
+    images: [
+      'assets/images/shotblast/railingscover.png',
+    ],
     files: [],
   },
 
