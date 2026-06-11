@@ -351,9 +351,9 @@ const PROJECTS = [
     },
     images: [],
     files: [
-      /* Uncomment when you add the PDF:
+      
          { label: 'Download Thesis (PDF)', href: 'assets/project-files/thesis.pdf' }
-      */
+      
     ],
   },
 
