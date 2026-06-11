@@ -354,7 +354,12 @@ const PROJECTS = [
       'Type': 'Undergraduate Research',
       'Status': 'Completed',
     },
-    images: [],
+    images: [
+      'assets/images/thesis/1.png',
+      'assets/images/thesis/2.jpg',
+      'assets/images/thesis/3.jpg',
+      'assets/images/thesis/4.gif',
+    ],
     files: [
       
          { label: 'Download Thesis (PDF)', href: 'assets/project-files/thesis.pdf' }
@@ -393,8 +398,13 @@ const PROJECTS = [
       'Type': 'Engineering Services',
       'Status': 'Completed',
     },
-    images: [],
-    files: [],
+    images: [
+      'assets/images/4bees/1.png'
+    ],
+    files: [
+      { label: 'Download Completion Report (PDF)', href: 'assets/project-files/4bees/4B.pdf' },
+      { label: 'Organization/Management Information (PDF)', href: 'assets/project-files/4bees/org.pdf' },
+    ],
   },
 
   {
