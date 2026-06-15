@@ -52,6 +52,7 @@ const PROJECTS = [
     ],
     files: [
       /* { label: 'View Pulley Database', href: 'assets/project-files/pulley_data.json' } */
+      { label: 'Download Pulley Viability Finder (ZIP)', href: 'assets/project-files/pulley/pulley.zip' }
     ],
   },
 
