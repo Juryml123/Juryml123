@@ -413,7 +413,7 @@ const PROJECTS = [
     categoryLabel: 'Academic',
     badgeClass: 'badge-acad',
     backHref: 'academic.html',
-    title: 'On-the-Job Training Report',
+    title: 'On-the-Job Training (OJT) Completion',
     subtitle: 'Comprehensive OJT documentation and weekly log',
     description: `
       The OJT report documents the entirety of my industrial training experience — capturing
@@ -438,8 +438,21 @@ const PROJECTS = [
       'Evaluation': 'Graded',
       'Status': 'Completed',
     },
-    images: [],
-    files: [],
+    images: [
+      'assets/images/ojt/1.jpg',
+      'assets/images/ojt/2.jpg',
+      'assets/images/ojt/3.jpg',
+      'assets/images/ojt/4.jpg',
+      'assets/images/ojt/5.jpg',
+      'assets/images/ojt/6.jpg',
+      'assets/images/ojt/7.jpg',
+      'assets/images/ojt/8.jpg',
+      'assets/images/ojt/9.jpg',
+      
+    ],
+    files: [
+      { label: 'Download OJT Completion Certificate (PDF)', href: 'assets/project-files/OJT/grade.pdf' }
+    ],
   },
 
 ];
